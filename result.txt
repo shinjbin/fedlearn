@@ -1,0 +1,287 @@
+--------------------------------------<dfa>-----------------------------------------
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001
+, tol = 0.0001
+
+Final global model accuracy using dfa: 94.89
+time taken using dfa: 434.11
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<backprop>---------------------------------------------
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001
+, tol = 0.0001
+
+Final global model accuracy using backprop: 95.47
+time taken using backprop: 437.02
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.002, tol = 0.0001
+
+Final global model accuracy using dfa: 88.38%
+time taken using dfa: 476.05
+---------------------------------------------------------------------------------------------
+--------------------------------------<dfa>---------------------------------------------
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.001
+
+Final global model accuracy using dfa: 91.68%
+time taken using dfa: 158.04
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<backprop>---------------------------------------------
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.001
+
+Final global model accuracy using backprop: 91.22%
+time taken using backprop: 166.98
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<backprop>---------------------------------------------
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0005
+
+Final global model accuracy using backprop: 92.32%
+time taken using backprop: 224.05
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001
+, tol = 0.0005
+
+Final global model accuracy using dfa: 93.01%
+time taken using dfa: 205.51
+---------------------------------------------------------------------------------------------
+
+
+
+
+<num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0005>
+--------------------------------------<dfa>---------------------------------------------
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0005
+
+Final global model accuracy using dfa: 92.41%
+time taken using dfa: 193.94
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<backprop>---------------------------------------------
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0005
+
+Final global model accuracy using backprop: 92.38%
+time taken using backprop: 210.87
+---------------------------------------------------------------------------------------------
+
+
+<num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0>
+--------------------------------------<backprop>---------------------------------------------
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0
+
+Final global model accuracy using backprop: 97.48%
+time taken using backprop: 1062.15
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0
+
+Final global model accuracy using dfa: 95.91%
+time taken using dfa: 1098.86
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.001
+
+Final global model accuracy using dfa: 91.31%
+time taken using dfa: 2138.26
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<backprop>---------------------------------------------
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.001
+
+Final global model accuracy using backprop: 91.44%
+time taken using backprop: 2185.93
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<backprop>---------------------------------------------
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.001
+
+Final global model accuracy using backprop: 91.24%
+time taken using backprop: 2155.52
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0005, ldp = True
+
+Final global model accuracy using dfa: 92.06%
+time taken using dfa: 2286.20
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0005, ldp = True
+
+Final global model accuracy using dfa: 92.45%
+time taken using dfa: 2276.67
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0005, ldp = True
+
+Final global model accuracy using dfa: 92.12%
+time taken using dfa: 2212.93
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+starting datetime: 2022-03-30 15:44:08.291947
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0005, ldp = True
+
+Final global model accuracy using dfa: 92.59%
+time taken using dfa: 2209.80
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+starting datetime: 2022-03-31 11:52:01.561942
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0005, ldp = True
+
+Final global model accuracy using dfa: 92.87%
+time taken using dfa: 2228.27
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+starting datetime: 2022-03-31 12:29:09.829182
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0005, ldp = True
+
+Final global model accuracy using dfa: 92.98%
+time taken using dfa: 3446.79
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+starting datetime: 2022-03-31 13:26:36.617190
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0005, ldp = True
+
+Final global model accuracy using dfa: 92.58%
+time taken using dfa: 2268.94
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+starting datetime: 2022-03-31 14:04:25.560262
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0005, ldp = True
+
+Final global model accuracy using dfa: 92.02%
+time taken using dfa: 2332.72
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+starting datetime: 2022-03-31 14:43:18.276754
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0005, ldp = True
+
+Final global model accuracy using dfa: 92.34%
+time taken using dfa: 7915.35
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+starting datetime: 2022-04-01 17:17:57.700795
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0005, ldp = True, alpha = 0.1
+
+Final global model accuracy using dfa: 92.67%
+time taken using dfa: 2279.64
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+starting datetime: 2022-04-01 17:55:57.335928
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0005, ldp = True, alpha = 0.1
+
+Final global model accuracy using dfa: 92.94%
+time taken using dfa: 2243.85
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+starting datetime: 2022-04-01 18:33:21.180960
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0005, ldp = True, alpha = 0.1
+
+Final global model accuracy using dfa: 92.33%
+time taken using dfa: 2222.22
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+starting datetime: 2022-04-01 19:10:23.401938
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0005, ldp = True, alpha = 0.1
+
+Final global model accuracy using dfa: 92.32%
+time taken using dfa: 2226.17
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+starting datetime: 2022-04-01 19:47:29.569534
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0005, ldp = True, alpha = 0.1
+
+Final global model accuracy using dfa: 92.08%
+time taken using dfa: 2231.26
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+starting datetime: 2022-04-01 20:24:40.824544
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0005, ldp = True, alpha = 0.1
+
+Final global model accuracy using dfa: 92.99%
+time taken using dfa: 2222.47
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+starting datetime: 2022-04-01 21:01:43.293531
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0005, ldp = True, alpha = 0.1
+
+Final global model accuracy using dfa: 92.54%
+time taken using dfa: 2232.89
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+starting datetime: 2022-04-01 21:38:56.185871
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0005, ldp = True, alpha = 0.1
+
+Final global model accuracy using dfa: 92.68%
+time taken using dfa: 2214.87
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+starting datetime: 2022-04-01 22:15:51.060012
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0005, ldp = True, alpha = 0.1
+
+Final global model accuracy using dfa: 91.84%
+time taken using dfa: 2221.27
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+starting datetime: 2022-04-01 22:52:52.328950
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0005, ldp = True, alpha = 0.1
+
+Final global model accuracy using dfa: 91.78%
+time taken using dfa: 2231.91
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+starting datetime: 2022-04-05 10:40:01.617139
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0005, ldp = True, alpha = 0.1
+
+Final global model accuracy using dfa: 91.88%
+time taken using dfa: 2307.30
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+starting datetime: 2022-04-06 15:12:05.833190
+num_clients = 2 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0005, ldp = True, alpha = 0.1
+
+Final global model accuracy using dfa: 91.30%
+time taken using dfa: 950.97
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+starting datetime: 2022-04-06 15:27:56.805130
+num_clients = 2 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0005, ldp = True, alpha = 0.06666666666666667
+
+Final global model accuracy using dfa: 91.15%
+time taken using dfa: 948.06
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+starting datetime: 2022-04-06 15:43:44.861196
+num_clients = 2 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0005, ldp = True, alpha = 0.044444444444444446
+
+Final global model accuracy using dfa: 90.30%
+time taken using dfa: 964.53
+---------------------------------------------------------------------------------------------
+
