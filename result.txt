@@ -285,3 +285,11 @@ Final global model accuracy using dfa: 90.30%
 time taken using dfa: 964.53
 ---------------------------------------------------------------------------------------------
 
+--------------------------------------<dfa>---------------------------------------------
+starting datetime: 2022-04-06 16:19:13.769443
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0005, ldp = False, alpha = False
+
+Final global model accuracy using dfa: 92.43%
+time taken using dfa: 218.05
+---------------------------------------------------------------------------------------------
+
