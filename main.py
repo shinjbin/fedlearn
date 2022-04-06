@@ -10,6 +10,7 @@ from torch.utils.data import DataLoader
 import os
 import pandas as pd
 from csv import writer
+import csv
 
 from src.dataset import Dataset
 from src.aggregation import Aggregation
@@ -23,8 +24,8 @@ if __name__ == '__main__':
 
     device = "cuda" if torch.cuda.is_available() else 'cpu'
 
-    os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-    os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
+    # os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+    # os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 
     print('Device:', device)
     print('Current cuda device:', torch.cuda.current_device())
@@ -120,6 +121,9 @@ if __name__ == '__main__':
                 f'---------------------------------------------------------------------------------------------\n\n')
         f.close()
 
+        global_accuracy_df = round(global_accuracy*100, 2)
+        time_spent = round(time.time()-start_time, 2)
+
         # write csv file
         if os.path.isfile('result.csv'):
             list_data = [train_mode, dt, num_clients, batch_size, num_round, learning_rate,
@@ -141,8 +145,8 @@ if __name__ == '__main__':
                     'alpha': alpha, \
                     'c': c, \
                     'rho': rho, \
-                    'Final global model accuracy': f'{global_accuracy*100:.2f}%', \
-                    'time taken': f'{time.time()-start_time:.2f}'})
+                    'Final global model accuracy': global_accuracy_df, \
+                    'time taken': time_spent})
             df.to_csv('result.csv')
 
 
