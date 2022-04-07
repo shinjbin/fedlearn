@@ -36,7 +36,7 @@ class Client(object):
                 W1, W2, b1, b2, gradients = self.nn.backprop_train(train_data=self.train_loader, tol=tol)
             else:
                 raise Exception("train mode is not existing")
-            self.nn.save()
+            # self.nn.save()
         else:
             self.nn.load()
             W1, W2, b1, b2 = self.nn.model.get_parameters()

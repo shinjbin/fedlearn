@@ -1,0 +1,4 @@
+train mode,starting datetime,num_clients,batch_size,num_round,learning_rate,tol,ldp,alpha,c,rho,Final global model accuracy,time taken
+dfa,2022-04-07 10:38:11.499271,2,4,3,0.001,0.0005,False,False,False,False,92.21,59.92
+dfa,2022-04-07 10:39:11.423101,2,4,3,0.001,0.0005,False,0.0,False,False,91.98%,56.75
+dfa,2022-04-07 10:40:08.177219,2,4,3,0.001,0.0005,False,0.0,False,False,92.29%,63.92

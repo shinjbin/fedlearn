@@ -41,7 +41,7 @@ if __name__ == '__main__':
     tol = 0.0005
 
     # ldp parameters
-    ldp = False
+    ldp = True
     if ldp:
         alpha = 0.1
         c = 1
@@ -134,7 +134,9 @@ if __name__ == '__main__':
                 f_object.close()
     
         else:
-            df = pd.DataFrame({'train mode': train_mode, \
+            columns = ['train mode', 'starting datetime', 'num_clients', 'batch_size', 'num_round', 'learning_rate',
+            'tol', 'ldp', 'alpha', 'c', 'rho', 'Final global model accuracy', 'time taken']
+            dict_df = {'train mode': train_mode, \
                     'starting datetime': dt, \
                     'num_clients': num_clients, \
                     'batch_size': batch_size, \
@@ -146,8 +148,9 @@ if __name__ == '__main__':
                     'c': c, \
                     'rho': rho, \
                     'Final global model accuracy': global_accuracy_df, \
-                    'time taken': time_spent})
-            df.to_csv('result.csv')
+                    'time taken': time_spent}
+            df = pd.DataFrame([dict_df], columns=columns)
+            df.to_csv('result.csv', index=False)
 
 
         torch.cuda.empty_cache()
