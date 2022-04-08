@@ -38,7 +38,7 @@ if __name__ == '__main__':
     num_round = 5
     train_mode = 'backprop'  # 'dfa' or 'backprop'
     learning_rate = 0.001
-    tol = 0.000
+    tol = 0.0001
 
     # shape of neural network
     hidden_size = [400, 300, 200]
@@ -83,13 +83,9 @@ if __name__ == '__main__':
         dataset = Dataset()
         train_dataset_split, test_dataset = dataset.split(num_clients)
         test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=True)
-        path_list = []
-        for i in range(num_clients):
-            path_list.append(f'CLIENT{i}_MNIST_CLASSIFIER.pth')
-        global_path = 'GLOBAL_MNIST_CLASSIFIER.pth'
 
         # create aggregation module
-        aggregation = Aggregation(device, global_path, train_mode, nn_parameters)
+        aggregation = Aggregation(device, train_mode, nn_parameters)
 
         # create clients
         clients = []
@@ -100,7 +96,6 @@ if __name__ == '__main__':
                                             train_dataset=train_dataset_split[i],
                                             test_dataset=test_dataset,
                                             batch_size=batch_size,
-                                            path=path_list[i],
                                             train_mode=train_mode,
                                             lr=learning_rate)
 

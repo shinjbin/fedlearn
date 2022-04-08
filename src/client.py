@@ -21,8 +21,8 @@ class Client(object):
         self.test_loader = None
         self.nn = None
 
-    def dataload(self, nn_parameters, train_dataset, test_dataset, batch_size, path, train_mode, lr=1e-4):
-        self.nn = copy.deepcopy(NHiddenNNModel(nn_parameters=nn_parameters, path=path, device=self.device, train_mode=train_mode, lr=lr))
+    def dataload(self, nn_parameters, train_dataset, test_dataset, batch_size, train_mode, lr=1e-4):
+        self.nn = copy.deepcopy(NHiddenNNModel(nn_parameters=nn_parameters, device=self.device, train_mode=train_mode, lr=lr))
 
         self.train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
         self.test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=True)

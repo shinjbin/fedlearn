@@ -102,8 +102,7 @@ class OneHiddenNN(nn.Module):
 
 
 class OneHiddenNNModel(object):
-    def __init__(self, path, lr, train_mode='dfa', criterion=None, num_epoch=10, device='cuda'):
-        self.path = path
+    def __init__(self, lr, train_mode='dfa', criterion=None, num_epoch=10, device='cuda'):
         self.device = device
         self.model = OneHiddenNN(train_mode, 784, 800, 10).to(device)
         self.num_epoch = num_epoch
@@ -211,13 +210,13 @@ class OneHiddenNNModel(object):
             _, predicted = torch.max(pred, 1)
             print('Predicted: ', ' '.join(f'{predicted[j]}' for j in range(4)))
 
-    def save(self):
-        torch.save(self.model.state_dict(), self.path)
+    # def save(self):
+    #     torch.save(self.model.state_dict(), self.path)
 
-    def load(self):
-        self.model.load_state_dict(torch.load(self.path))
-        self.model.to(self.device)
-        self.model.eval()
+    # def load(self):
+    #     self.model.load_state_dict(torch.load(self.path))
+    #     self.model.to(self.device)
+    #     self.model.eval()
 
 # McMahan et al., 2016; 1,663,370 parameters
 class CNN(nn.Module):
@@ -410,8 +409,7 @@ class NHiddenNN(nn.Module):
 
 
 class NHiddenNNModel(object):
-    def __init__(self, nn_parameters, path, lr, train_mode, criterion=None, num_epoch=10, device='cuda'):
-        self.path = path
+    def __init__(self, nn_parameters, lr, train_mode, criterion=None, num_epoch=10, device='cuda'):
         self.device = device
         self.model = NHiddenNN(nn_parameters=nn_parameters, train_mode=train_mode).to(device)
         self.num_epoch = num_epoch
@@ -491,10 +489,10 @@ class NHiddenNNModel(object):
             _, predicted = torch.max(pred, 1)
             print('Predicted: ', ' '.join(f'{predicted[j]}' for j in range(4)))
 
-    def save(self):
-        torch.save(self.model.state_dict(), self.path)
+    # def save(self):
+    #     torch.save(self.model.state_dict(), self.path)
 
-    def load(self):
-        self.model.load_state_dict(torch.load(self.path))
-        self.model.to(self.device)
-        self.model.eval()
+    # def load(self):
+    #     self.model.load_state_dict(torch.load(self.path))
+    #     self.model.to(self.device)
+    #     self.model.eval()

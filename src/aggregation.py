@@ -10,11 +10,11 @@ from .client import Client
     averaging parameter/gradients of clients,
     send parameters to local models of clients"""
 class Aggregation(object):
-    def __init__(self, device, path, train_mode, nn_parameters):
+    def __init__(self, device, train_mode, nn_parameters):
         self.device = device
         self.clients = []
         self.num_client = 0
-        self.global_model = NHiddenNNModel(device=device, path=path, lr=0.001, train_mode=train_mode, nn_parameters=nn_parameters)
+        self.global_model = NHiddenNNModel(device=device, lr=0.001, train_mode=train_mode, nn_parameters=nn_parameters)
         self.n = self.global_model.model.n
         self.nn_parameters = nn_parameters
 
@@ -77,7 +77,7 @@ class Aggregation(object):
 
         else:
             for i in range(self.num_client):
-                temp_W, temp_b = self.clients[i].nn.model.get_parameters()
+                temp_W, temp_b = self.clients[i].nn.model.W, self.clients[i].nn.model.b
                 for w in temp_W:
                     w.to(self.device)
                 for b in temp_b:
@@ -103,7 +103,7 @@ class Aggregation(object):
             # print(check_w1, check_w2, check_b1, check_b2)
 
     def global_gradient_update(self, alpha, c, rho, ldp):
-        gradient_weights, gradient_biases = self.average_parameters(alpha=alpha, c=c, rho=rho, ldp=ldp)
+        gradient_weights, gradient_biases = self.average_gradients(alpha=alpha, c=c, rho=rho, ldp=ldp)
 
         self.global_model.parameter_update(gradient_weights, gradient_biases)
 
