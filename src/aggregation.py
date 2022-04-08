@@ -34,37 +34,54 @@ class Aggregation(object):
         W1, W2, b1, b2 = self.clients[index].nn.model.get_parameters()
         return W1, W2, b1, b2
 
-    def average_parameters(self, alpha, c, rho, ldp=True):
-        avg_W1, avg_W2, avg_b1, avg_b2 = 0, 0, 0, 0
+    def average_gradients(self, alpha, c, rho, ldp):
+        avg_dW1, avg_dW2, avg_db1, avg_db2 = 0, 0, 0, 0
         for i in range(self.num_client):
-            if ldp:
+            ldp_dW1, ldp_dW2, ldp_db1, ldp_db2 = self.clients[i].gradient_ldp(alpha=alpha, c=c, rho=rho)
+                
+            print("--------------------------------")
+            print('parameter averaging...')
+
+            avg_dW1 += ldp_dW1
+            avg_dW2 += ldp_dW2
+            avg_db1 += ldp_db1
+            avg_db2 += ldp_db2
+        
+        avg_dW1 /= self.num_client
+        avg_dW2 /= self.num_client
+        avg_db1 /= self.num_client
+        avg_db2 /= self.num_client
+
+        return avg_dW1, avg_dW2, avg_db1, avg_db2
+
+    def average_parameters(self, alpha, c, rho, ldp):
+        avg_W1, avg_W2, avg_b1, avg_b2 = 0, 0, 0, 0
+        if ldp:
+            for i in range(self.num_client):
                 ldp_W1, ldp_W2, ldp_b1, ldp_b2 = self.clients[i].ldp(alpha=alpha, c=c, rho=rho)
+
+                print("--------------------------------")
+                print('parameter averaging...')
 
                 avg_W1 += ldp_W1
                 avg_W2 += ldp_W2
                 avg_b1 += ldp_b1
                 avg_b2 += ldp_b2
 
-            else:
-                temp_W1, temp_W2, temp_b1, temp_b2 = self.clients[i].nn.model.get_parameters()
-                temp_W1, temp_W2, temp_b1, temp_b2 = temp_W1.to(self.device), temp_W2.to(self.device), temp_b1.to(self.device), temp_b2.to(self.device)
-                
-                
+        else:
+            for i in range(self.num_client):
+                print("--------------------------------")
+                print('parameter averaging...')
 
+                temp_W1, temp_W2, temp_b1, temp_b2 = self.clients[i].nn.model.get_parameters()
+                temp_W1, temp_W2 = temp_W1.to(self.device), temp_W2.to(self.device)
+                temp_b1, temp_b2 = temp_b1.to(self.device), temp_b2.to(self.device)
+                
                 avg_W1 += temp_W1
                 avg_W2 += temp_W2
                 avg_b1 += temp_b1
                 avg_b2 += temp_b2
-        
-        print("--------------------------------")
-        print('parameter averaging...')
-
-            # check_w1 = torch.equal(ldp_W1, temp_W1)
-            # check_w2 = torch.equal(ldp_W1, temp_W1)
-            # check_b1 = torch.equal(ldp_W1, temp_W1)
-            # check_b2 = torch.equal(ldp_W1, temp_W1)
-            # print(check_w1, check_w2, check_b1, check_b2)
-
+            
         avg_W1 /= self.num_client
         avg_W2 /= self.num_client
         avg_b1 /= self.num_client
@@ -72,12 +89,22 @@ class Aggregation(object):
 
         return avg_W1, avg_W2, avg_b1, avg_b2
 
-    def global_parameter_update(self, alpha, c, rho, ldp=True):
-       
+            # check_w1 = torch.equal(ldp_W1, temp_W1)
+            # check_w2 = torch.equal(ldp_W1, temp_W1)
+            # check_b1 = torch.equal(ldp_W1, temp_W1)
+            # check_b2 = torch.equal(ldp_W1, temp_W1)
+            # print(check_w1, check_w2, check_b1, check_b2)
 
+    def global_gradient_update(self, alpha, c, rho, ldp):
+        W1, W2, b1, b2 = self.average_parameters(alpha=alpha, c=c, rho=rho, ldp=ldp)
+
+    def global_parameter_update(self, alpha, c, rho, ldp):
+       
+        
         W1, W2, b1, b2 = self.average_parameters(alpha=alpha, c=c, rho=rho, ldp=ldp)
 
         self.global_model.model.parameter_renew(W1, W2, b1, b2)
+    
 
     def local_parameter_update(self):
         print('local model parameter updating...')

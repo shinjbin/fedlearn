@@ -36,6 +36,7 @@ class OneHiddenNN(nn.Module):
         self.W2.requires_grad = True
         self.b2 = self.fc2.bias
         self.sigmoid = nn.Sigmoid()
+        self.gradients = [0, 0, 0, 0]
 
         if train_mode == 'dfa':
             # set parameters zero for dfa
@@ -91,6 +92,9 @@ class OneHiddenNN(nn.Module):
     def get_parameters(self):
         return self.W1, self.W2, self.b1, self.b2
 
+    def get_gradients(self):
+        return self.gradients
+
 
 class OneHiddenNNModel(object):
     def __init__(self, path, lr, train_mode='dfa', criterion=None, num_epoch=10, device='cuda'):
@@ -125,13 +129,13 @@ class OneHiddenNNModel(object):
                     break
                 prev_loss = loss
 
-                gradients = [dW1, dW2, db1, db2]
+                self.model.gradients = [dW1, dW2, db1, db2]
 
                 # if batch % 2000 == 1999:
                 #     print(f'[{epoch + 1}, {batch + 1:5d}] loss: {running_loss / 2000:.8f}')
                 #     running_loss = 0.0
 
-        return self.model.W1, self.model.W2, self.model.b1, self.model.b2, gradients
+        return self.model.W1, self.model.W2, self.model.b1, self.model.b2
 
     def backprop_train(self, train_data, tol=1e-5):
         self.model.to(self.device)
@@ -153,13 +157,13 @@ class OneHiddenNNModel(object):
                 dW1, dW2, db1, db2 = self.model.backprop_backward(e, h1, x)
                 self.model.parameter_update(self.lr, dW1, dW2, db1, db2)
 
-                gradients = [dW1, dW2, db1, db2]
+                self.model.gradients = [dW1, dW2, db1, db2]
 
                 if np.abs(loss - prev_loss) <= tol:
                     break
                 prev_loss = loss
 
-        return self.model.W1, self.model.W2, self.model.b1, self.model.b2, gradients
+        return self.model.W1, self.model.W2, self.model.b1, self.model.b2
 
     def test(self, test_data):
         self.model.to(self.device)
@@ -291,3 +295,124 @@ class CNN2(nn.Module):
         x = self.fc2(x)
 
         return x
+
+
+
+"""Using DFA or backpropagation, n hidden layer, linear layers
+    activation function: tanh"""
+class NHiddenNN(nn.Module):
+    """
+    <default>
+    train_mode: dfa
+    W1 : 400 * 784, W2: 400 * 400, W3: 10 * 400
+    b1 : 400, b2: 400, b3: 10
+    a1 : 4 * 800, a2 : 4 * 10
+    y_hat : 4 * 10
+    """
+
+    def __init__(self, train_mode='dfa', in_features=784, num_hidden_layers=2, num_hiddens=[400, 400], num_classes=10):
+        super().__init__()
+        self.in_features = in_features
+        self.num_hidden_layers = num_hidden_layers
+        self.num_hiddens = num_hiddens
+        self.num_classes = num_classes
+        self.n = num_hidden_layers + 1
+        linear_layer_sizes = num_hiddens.insert(0, in_features)
+        linear_layer_sizes.append(num_classes)
+
+        self.fc = []
+        self.W = []
+        self.b = []
+        for i in range(self.n):
+            self.fc.append(nn.Linear(linear_layer_sizes[i], linear_layer_sizes[i+1]))
+            self.W.append(self.fc[i].weight)
+            self.W[i].requires_grad = True
+            self.b.append(self.fc[i].bias)
+
+        self.tanh = nn.Tanh()
+        self.sigmoid = nn.Sigmoid()
+        self.gradients = []
+
+        """a[0] = W[0]*x + b[0], h1 = f(a[0])"""
+        self.a = [0] * self.n
+        self.h = [0] * self.n
+
+        # set parameters zero for dfa
+        if train_mode == 'dfa':
+            for i in range(self.n):
+                self.W[i].data.fill_(0)
+                self.b[i].data.fill_(0)
+
+    def forward(self, x):
+        x = x.view(-1, self.in_features)
+        a = [0] * self.n
+        # h: activation
+        h = [0] * self.n-1
+        for i in range(self.n):
+            if i == 0:
+                a[i] = self.fc[i](x)
+            else:
+                a[i] = self.fc[i](a[i-1])
+
+            if i == self.n-1:
+                y_hat = self.sigmoid(self.a[i])
+            else:
+                h[i] = self.tanh(a[i])
+
+        return a, h, y_hat
+
+    def dfa_backward(self, e, B, x):
+        da = [0] * self.n
+        dW = [0] * self.n
+        db = [0] * self.n
+        for i in range(self.n):
+            x = x.view(-1, self.fc1.in_features)
+
+            if i == 0:
+                da[i] = -torch.matmul(e, B[i]) * (1 - torch.tanh(self.a[i]) ** 2)
+                dW[i] = -torch.matmul(torch.t(da1), x)
+            else:
+                da[i] = -torch.matmul
+            
+            dW2 = -torch.matmul(torch.t(e), self.h1)
+            da1 = torch.matmul(e, B1) * (1 - torch.tanh(self.a1) ** 2)
+            dW1 = -torch.matmul(torch.t(da1), x)
+            db1 = -torch.sum(da1, dim=0)
+            db2 = -torch.sum(e, dim=0)
+
+        return dW1, dW2, db1, db2
+
+    def backprop_backward(self, e, h1, x):
+        x = x.view(-1, self.fc1.in_features)
+        # print(f'W2: {self.W2.shape}, W1: {self.W1.shape}, x: {x.shape}, e: {e.shape}, h1: {h1.shape}, a1: {self.a1.shape}')
+        dW2 = -torch.matmul(torch.t(e), h1)
+        da1 = torch.matmul(e, self.W2) * (1 - torch.tanh(self.a1) ** 2)
+        dW1 = -torch.matmul(torch.t(da1), x)
+        db1 = -torch.sum(da1, dim=0)
+        db2 = -torch.sum(e, dim=0)
+
+        return dW1, dW2, db1, db2
+
+    def parameter_update(self, lr, dW1, dW2, db1, db2):
+        with torch.no_grad():
+            self.W1 += lr * dW1
+            self.b1 += lr * db1
+            self.W2 += lr * dW2
+            self.b2 += lr * db2
+
+    def parameter_renew(self, weights, biases):
+        with torch.no_grad():
+            for i in range(self.n):
+                self.W[i].copy_(weights[i])
+                self.b[i].copy_(biases[i])
+
+            self.W1.copy_(W1)
+            self.b1.copy_(b1)
+            self.W2.copy_(W2)
+            self.b2.copy_(b2)
+
+    def get_parameters(self):
+        return self.W1, self.W2, self.b1, self.b2
+
+    def get_gradients(self):
+        return self.gradients

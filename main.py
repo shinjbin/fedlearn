@@ -39,9 +39,10 @@ if __name__ == '__main__':
     train_mode = 'dfa'  # 'dfa' or 'backprop'
     learning_rate = 0.001
     tol = 0.0005
+    
 
     # ldp parameters
-    ldp = True
+    ldp = 'gradient' # 'gradient' or 'parameter' or False
     if ldp:
         alpha = 0.1
         c = 1
@@ -95,7 +96,10 @@ if __name__ == '__main__':
 
             # performing alpha-CLDP and update global model parameter(parameter averaging)
             print(f'ldp parameters: alpha:{alpha:.2f}, c:{c}, rho:{rho}')
-            aggregation.global_parameter_update(alpha=alpha, c=c, rho=rho, ldp=ldp)
+            if ldp == 'gradient':
+                aggregation.global_gradient_update(alpha=alpha, c=c, rho=rho, ldp=ldp)
+            else:
+                aggregation.global_parameter_update(alpha=alpha, c=c, rho=rho, ldp=ldp)
 
             # test global model
             global_accuracy = aggregation.global_model.test(test_loader)

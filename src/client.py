@@ -72,6 +72,15 @@ class Client(object):
         ldp_W1, ldp_W2, ldp_b1, ldp_b2 = ldp.ordinal_cldp(alpha=alpha, c=c, rho=rho)
 
         return ldp_W1, ldp_W2, ldp_b1, ldp_b2
+    
+    def gradient_ldp(self, alpha, c, rho):
+        gradients = self.nn.model.gradients
+
+        ldp = LDP(W1_user=gradients[0], W2_user=gradients[1], b2_user=gradients[2], device=self.device)
+
+        ldp_dW1, ldp_dW2, ldp_db1, ldp_db2 = ldp.ordinal_cldp(alpha=alpha, c=c, rho=rho)
+
+        return ldp_dW1, ldp_dW2, ldp_db1, ldp_db2
 
 
 
