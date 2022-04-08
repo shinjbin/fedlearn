@@ -135,7 +135,7 @@ class OneHiddenNNModel(object):
                 #     print(f'[{epoch + 1}, {batch + 1:5d}] loss: {running_loss / 2000:.8f}')
                 #     running_loss = 0.0
 
-        return self.model.W1, self.model.W2, self.model.b1, self.model.b2
+        return self.model.W1, self.model.W2, self.model.b1, self.model.b2, self.model.gradients
 
     def backprop_train(self, train_data, tol=1e-5):
         self.model.to(self.device)
@@ -163,7 +163,7 @@ class OneHiddenNNModel(object):
                     break
                 prev_loss = loss
 
-        return self.model.W1, self.model.W2, self.model.b1, self.model.b2
+        return self.model.W1, self.model.W2, self.model.b1, self.model.b2, self.model.gradients
 
     def test(self, test_data):
         self.model.to(self.device)
@@ -406,10 +406,10 @@ class NHiddenNN(nn.Module):
                 self.W[i].copy_(weights[i])
                 self.b[i].copy_(biases[i])
 
-            self.W1.copy_(W1)
-            self.b1.copy_(b1)
-            self.W2.copy_(W2)
-            self.b2.copy_(b2)
+            # self.W1.copy_(W1)
+            # self.b1.copy_(b1)
+            # self.W2.copy_(W2)
+            # self.b2.copy_(b2)
 
     def get_parameters(self):
         return self.W1, self.W2, self.b1, self.b2

@@ -4,7 +4,11 @@ import copy
 from .models import OneHiddenNNModel, OneHiddenNN
 from .client import Client
 
-"""class for aggregation module"""
+"""This is Class for aggregation module.
+    this performs creating clients, 
+    train/test clients, 
+    averaging parameter/gradients of clients,
+    send parameters to local models of clients"""
 class Aggregation(object):
     def __init__(self, device, path, train_mode):
         self.device = device
@@ -34,13 +38,15 @@ class Aggregation(object):
         W1, W2, b1, b2 = self.clients[index].nn.model.get_parameters()
         return W1, W2, b1, b2
 
+    # averaging gradients in aggregation module
     def average_gradients(self, alpha, c, rho, ldp):
+        print("--------------------------------")
+        print('parameter averaging...')
         avg_dW1, avg_dW2, avg_db1, avg_db2 = 0, 0, 0, 0
         for i in range(self.num_client):
             ldp_dW1, ldp_dW2, ldp_db1, ldp_db2 = self.clients[i].gradient_ldp(alpha=alpha, c=c, rho=rho)
                 
-            print("--------------------------------")
-            print('parameter averaging...')
+            
 
             avg_dW1 += ldp_dW1
             avg_dW2 += ldp_dW2
@@ -54,14 +60,16 @@ class Aggregation(object):
 
         return avg_dW1, avg_dW2, avg_db1, avg_db2
 
+    # averaging parameters(weights, biases) in aggregation module
     def average_parameters(self, alpha, c, rho, ldp):
+        print("--------------------------------")
+        print('parameter averaging...')
         avg_W1, avg_W2, avg_b1, avg_b2 = 0, 0, 0, 0
         if ldp:
             for i in range(self.num_client):
                 ldp_W1, ldp_W2, ldp_b1, ldp_b2 = self.clients[i].ldp(alpha=alpha, c=c, rho=rho)
 
-                print("--------------------------------")
-                print('parameter averaging...')
+
 
                 avg_W1 += ldp_W1
                 avg_W2 += ldp_W2
@@ -70,9 +78,6 @@ class Aggregation(object):
 
         else:
             for i in range(self.num_client):
-                print("--------------------------------")
-                print('parameter averaging...')
-
                 temp_W1, temp_W2, temp_b1, temp_b2 = self.clients[i].nn.model.get_parameters()
                 temp_W1, temp_W2 = temp_W1.to(self.device), temp_W2.to(self.device)
                 temp_b1, temp_b2 = temp_b1.to(self.device), temp_b2.to(self.device)

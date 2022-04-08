@@ -24,8 +24,8 @@ if __name__ == '__main__':
 
     device = "cuda" if torch.cuda.is_available() else 'cpu'
 
-    # os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-    # os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
+    os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+    os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 
     print('Device:', device)
     print('Current cuda device:', torch.cuda.current_device())
@@ -42,7 +42,7 @@ if __name__ == '__main__':
     
 
     # ldp parameters
-    ldp = 'gradient' # 'gradient' or 'parameter' or False
+    ldp = 'parameter' # 'gradient' or 'parameter' or False
     if ldp:
         alpha = 0.1
         c = 1
@@ -95,7 +95,7 @@ if __name__ == '__main__':
             print("--------------------------------")
 
             # performing alpha-CLDP and update global model parameter(parameter averaging)
-            print(f'ldp parameters: alpha:{alpha:.2f}, c:{c}, rho:{rho}')
+            print(f'ldp parameters: alpha:{alpha:.5f}, c:{c}, rho:{rho}')
             if ldp == 'gradient':
                 aggregation.global_gradient_update(alpha=alpha, c=c, rho=rho, ldp=ldp)
             else:
@@ -127,6 +127,7 @@ if __name__ == '__main__':
 
         global_accuracy_df = round(global_accuracy*100, 2)
         time_spent = round(time.time()-start_time, 2)
+        alpha = round(alpha, 5)
 
         # write csv file
         if os.path.isfile('result.csv'):
@@ -159,7 +160,7 @@ if __name__ == '__main__':
 
         torch.cuda.empty_cache()
 
-        alpha /= 1.5
+        alpha /= 1.2
 
         
 
