@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader
 import torch
 from torchvision.datasets import MNIST
 import torchvision.transforms as transforms
-from .models import OneHiddenNNModel, OneHiddenNN
+from .models import NHiddenNN, NHiddenNNModel
 import torch.utils.data as data
 from .ldp_module import LDP
 
@@ -21,32 +21,21 @@ class Client(object):
         self.test_loader = None
         self.nn = None
 
-    def dataload(self, train_dataset, test_dataset, batch_size, path, train_mode='dfa', lr=1e-4):
-        self.nn = copy.deepcopy(OneHiddenNNModel(path=path, device=self.device, train_mode=train_mode, lr=lr))
+    def dataload(self, nn_parameters, train_dataset, test_dataset, batch_size, path, train_mode, lr=1e-4):
+        self.nn = copy.deepcopy(NHiddenNNModel(nn_parameters=nn_parameters, path=path, device=self.device, train_mode=train_mode, lr=lr))
 
         self.train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
         self.test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=True)
 
-    def local_train(self, B1, train_mode, tol, train=True):
+    def local_train(self, B, tol):
         self.nn.model.to(self.device)
-        if train:
-            if train_mode == 'dfa':
-                weights, biases, gradient_weights, gradient_biases = self.nn.dfa_train(train_data=self.train_loader, B1=B1, tol=tol)
-            elif train_mode == 'backprop':
-                weights, biases, gradient_weights, gradient_biases = self.nn.backprop_train(train_data=self.train_loader, tol=tol)
-            else:
-                raise Exception("train mode is not existing")
-            # self.nn.save()
-        else:
-            self.nn.load()
-            weights, biases = self.nn.model.get_parameters()
-            gradient_weights, gradient_biases = 0, 0
+        W, b, dW, db = self.nn.train(train_data=self.train_loader, B=B, tol=tol)
 
         if self.device == "cuda":
             torch.cuda.empty_cache()
         # self.nn.model.to("cpu")
 
-        return weights, biases, gradient_weights, gradient_biases
+        return W, b, dW, db
 
     def local_eval(self):
         accuracy = self.nn.test(self.test_loader)

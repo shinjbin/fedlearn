@@ -1,7 +1,7 @@
 import torch
 import copy
 
-from .models import OneHiddenNNModel, OneHiddenNN
+from .models import NHiddenNNModel, NHiddenNN
 from .client import Client
 
 """This is Class for aggregation module.
@@ -10,25 +10,27 @@ from .client import Client
     averaging parameter/gradients of clients,
     send parameters to local models of clients"""
 class Aggregation(object):
-    def __init__(self, device, path, train_mode):
+    def __init__(self, device, path, train_mode, nn_parameters):
         self.device = device
         self.clients = []
         self.num_client = 0
-        self.global_model = OneHiddenNNModel(device=device, path=path, lr=0.001, train_mode=train_mode)
+        self.global_model = NHiddenNNModel(device=device, path=path, lr=0.001, train_mode=train_mode, nn_parameters=nn_parameters)
         self.n = self.global_model.model.n
+        self.nn_parameters = nn_parameters
 
-    def create_clients(self, client_id, alpha):
-
+    def create_clients(self, client_id):
         client = copy.deepcopy(Client(client_id=client_id, device=self.device))
         self.clients.append(client)
         self.num_client += 1
 
-    def train_client(self, train_mode, tol, train=True):
-        B1 = torch.randn(10, 800).to(self.device)
+    def train_client(self, train_mode, tol, hidden_size, num_classes):
+        B = [0] * (self.n-1)
+        for i in range(self.n-1):
+            B[i] = torch.randn(num_classes, hidden_size[i]).to(self.device)
 
         for i in range(self.num_client):
             print(f'Training client {i}...')
-            self.clients[i].local_train(train=train, train_mode=train_mode, B1=B1, tol=tol)
+            self.clients[i].local_train(B=B, tol=tol)
 
     def test_client(self):
         for i in range(self.num_client):

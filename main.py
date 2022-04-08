@@ -38,11 +38,22 @@ if __name__ == '__main__':
     num_round = 5
     train_mode = 'backprop'  # 'dfa' or 'backprop'
     learning_rate = 0.001
-    tol = 0.0005
-    
+    tol = 0.000
+
+    # shape of neural network
+    hidden_size = [400, 300, 200]
+    num_hidden_layer = len(hidden_size)
+    in_features = 784 # 28*28
+    num_classes = 10
+    nn_parameters = {
+        'num_hidden_layer': num_hidden_layer,
+        'in_features': in_features,
+        'hidden_size': hidden_size,
+        'num_classes': num_classes
+    }
 
     # ldp parameters
-    ldp = 'parameter' # 'gradient' or 'parameter' or False
+    ldp = False # 'gradient' or 'parameter' or False
     if ldp:
         alpha = 0.1
         c = 1
@@ -52,13 +63,17 @@ if __name__ == '__main__':
         c = False
         rho = False
 
+    
+
     for stage in range(10):
         dt = datetime.datetime.now()
         start_time = time.time()
         print(f'--------------------------------------<{train_mode}>---------------------------------------------\n'
                 f'starting datetime: {dt}\n'
                 f'num_clients = {num_clients} batch_size = {batch_size}, num_round = {num_round}, '
-                f'learning_rate = {learning_rate}, tol = {tol}, ldp = {ldp}, alpha = {alpha}\n\n'
+                f'learning_rate = {learning_rate}, tol = {tol}, ldp = {ldp}, alpha = {alpha}\n'
+                f'MODEL: num_hidden_layer = {num_hidden_layer}, in_features = {in_features}, hidden_size = {hidden_size}, '
+                f'output_size = {num_classes}\n'
                 f'---------------------------------------------------------------------------------------------\n\n')
         print(f'current stage: {stage}\n')
         
@@ -74,14 +89,15 @@ if __name__ == '__main__':
         global_path = 'GLOBAL_MNIST_CLASSIFIER.pth'
 
         # create aggregation module
-        aggregation = Aggregation(device, global_path, train_mode)
+        aggregation = Aggregation(device, global_path, train_mode, nn_parameters)
 
         # create clients
         clients = []
         print(f'Creating {num_clients} clients...')
         for i in range(num_clients):
-            aggregation.create_clients(i, alpha=alpha)
-            aggregation.clients[i].dataload(train_dataset=train_dataset_split[i],
+            aggregation.create_clients(i)
+            aggregation.clients[i].dataload(nn_parameters=nn_parameters,
+                                            train_dataset=train_dataset_split[i],
                                             test_dataset=test_dataset,
                                             batch_size=batch_size,
                                             path=path_list[i],
@@ -93,7 +109,7 @@ if __name__ == '__main__':
             print(f'---------------<Round {r}>----------------')
 
             # train clients local model
-            aggregation.train_client(train_mode=train_mode, tol=tol)
+            aggregation.train_client(train_mode=train_mode, tol=tol, hidden_size=hidden_size, num_classes=num_classes)
             print("--------------------------------")
 
             # test clients local model
@@ -101,7 +117,9 @@ if __name__ == '__main__':
             print("--------------------------------")
 
             # performing alpha-CLDP and update global model parameter(parameter averaging)
-            print(f'ldp parameters: alpha:{alpha:.5f}, c:{c}, rho:{rho}')
+            if ldp: print(f'ldp parameters: alpha:{alpha:.5f}, c:{c}, rho:{rho}')
+            else: print('no ldp')
+
             if ldp == 'gradient':
                 aggregation.global_gradient_update(alpha=alpha, c=c, rho=rho, ldp=ldp)
             else:
@@ -133,12 +151,13 @@ if __name__ == '__main__':
 
         global_accuracy_df = round(global_accuracy*100, 2)
         time_spent = round(time.time()-start_time, 2)
-        alpha = round(alpha, 5)
+        if alpha != False: alpha = round(alpha, 5)
 
         # write csv file
         if os.path.isfile('result.csv'):
             list_data = [train_mode, dt, num_clients, batch_size, num_round, learning_rate,
-                    tol, ldp, alpha, c, rho, f'{global_accuracy*100:.2f}%', f'{time.time()-start_time:.2f}']
+                    tol, ldp, alpha, c, rho, f'{global_accuracy*100:.2f}%', f'{time.time()-start_time:.2f}',
+                    hidden_size]
             with open('result.csv', 'a', newline='') as f_object:
                 writer_object = writer(f_object)
                 writer_object.writerow(list_data)

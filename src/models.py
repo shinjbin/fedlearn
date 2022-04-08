@@ -219,26 +219,6 @@ class OneHiddenNNModel(object):
         self.model.to(self.device)
         self.model.eval()
 
-
-class TwoNN(nn.Module):
-    def __init__(self, name, in_features, num_hiddens, num_classes):
-        super(TwoNN, self).__init__()
-        self.name = name
-        self.activation = nn.ReLU(True)
-
-        self.fc1 = nn.Linear(in_features=in_features, out_features=num_hiddens, bias=True)
-        self.fc2 = nn.Linear(in_features=num_hiddens, out_features=num_hiddens, bias=True)
-        self.fc3 = nn.Linear(in_features=num_hiddens, out_features=num_classes, bias=True)
-
-    def forward(self, x):
-        if x.ndim == 4:
-            x = x.view(x.size(0), -1)
-        x = self.activation(self.fc1(x))
-        x = self.activation(self.fc2(x))
-        x = self.fc3(x)
-        return x
-
-
 # McMahan et al., 2016; 1,663,370 parameters
 class CNN(nn.Module):
     def __init__(self, name, in_channels, hidden_channels, num_hiddens, num_classes):
@@ -318,21 +298,22 @@ class NHiddenNN(nn.Module):
     y_hat : 4 * 10
     """
 
-    def __init__(self, train_mode, in_features=784, num_hidden_layers=2, num_hiddens=[400, 300], num_classes=10):
+    def __init__(self, train_mode, nn_parameters):
         super().__init__()
-        self.in_features = in_features
-        self.num_hidden_layers = num_hidden_layers
-        self.num_hiddens = num_hiddens
-        self.num_classes = num_classes
-        self.n = num_hidden_layers + 1
-        linear_layer_sizes = num_hiddens.insert(0, in_features)
-        linear_layer_sizes.append(num_classes)
+        self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        self.in_features = nn_parameters['in_features']
+        self.num_hidden_layer = nn_parameters['num_hidden_layer']
+        self.hidden_size = nn_parameters['hidden_size']
+        self.num_classes = nn_parameters['num_classes']
+        self.n = self.num_hidden_layer + 1
+        linear_layer_sizes = [self.in_features] + self.hidden_size
+        linear_layer_sizes.append(self.num_classes)
 
         self.fc = []
         self.W = []
         self.b = []
         for i in range(self.n):
-            self.fc.append(nn.Linear(linear_layer_sizes[i], linear_layer_sizes[i+1]))
+            self.fc.append(nn.Linear(linear_layer_sizes[i], linear_layer_sizes[i+1]).to(self.device))
             self.W.append(self.fc[i].weight)
             self.W[i].requires_grad = True
             self.b.append(self.fc[i].bias)
@@ -342,7 +323,7 @@ class NHiddenNN(nn.Module):
 
         """a[i] = W[i]*x + b[i], h1 = f(a[i])"""
         self.a = [0] * self.n
-        self.h = [0] * self.n
+        self.h = [0] * (self.n-1)
 
         self.dW = [0] * self.n
         self.db = [0] * self.n
@@ -370,51 +351,44 @@ class NHiddenNN(nn.Module):
 
     def dfa_backward(self, e, B, x):
         da = [0] * (self.n-1)
-        dW = [0] * self.n
-        db = [0] * self.n
-        x = x.view(-1, self.fc1.in_features)
+        x = x.view(-1, self.fc[0].in_features)
 
         for i in range(self.n):
             
             if i == 0:
                 da[i] = -torch.matmul(e, B[i]) * (1 - torch.tanh(self.a[i]) ** 2)
-                dW[i] = -torch.matmul(torch.t(da[i]), x)
-                db[i] = -torch.sum(da[i], dim=0)
+                self.dW[i] = -torch.matmul(torch.t(da[i]), x)
+                self.db[i] = -torch.sum(da[i], dim=0)
             elif i == self.n-1:
-                dW[i] = -torch.matmul(torch.t(e), self.h[i])
-                db[i] = -torch.sum(e, dim=0)
+                self.dW[i] = -torch.matmul(torch.t(e), self.h[i-1])
+                self.db[i] = -torch.sum(e, dim=0)
             else:
                 da[i] = -torch.matmul(e, B[i]) * (1 - torch.tanh(self.a[i]) ** 2)
-                dW[i] = -torch.matmul(torch.t(da[i]), self.h[i])
-                db[i] = -torch.sum(da[i], dim=0)
+                self.dW[i] = -torch.matmul(torch.t(da[i]), self.h[i-1])
+                self.db[i] = -torch.sum(da[i], dim=0)
 
-        self.dW, self.db = dW, db
-
-        return dW, db
+        return self.dW, self.db
 
     def backprop_backward(self, e, x):
         da = [0] * (self.n-1)
-        dW = [0] * self.n
-        db = [0] * self.n
-        x = x.view(-1, self.fc1.in_features)
+        x = x.view(-1, self.fc[0].in_features)
         
         for i in reversed(range(self.n)):
             if i == self.n-1:
-                da[i] = torch.matmul(e, self.W[i+1]) * (1 - torch.tanh(self.a[i]) ** 2)
-                dW[i] = -torch.matmul(torch.t(e), self.h[i])
-                db[i] = -torch.sum(e, dim=0)
+                da[i-1] = torch.matmul(e, self.W[i]) * (1 - torch.tanh(self.a[i-1]) ** 2)
+                self.dW[i] = -torch.matmul(torch.t(e), self.h[i-1])
+                self.db[i] = -torch.sum(e, dim=0)
             else:
-                da[i] = torch.matmul(da[i+1], self.W[i+1]) * (1 - torch.tanh(self.a[i]) ** 2)
+                
                 if i == 0:
-                    dW[i] = -torch.matmul(torch.t(da[i]), x)
-                    db[i] = -torch.sum(da[i], dim=0)
+                    self.dW[i] = -torch.matmul(torch.t(da[0]), x)
+                    self.db[i] = -torch.sum(da[0], dim=0)
                 else:
-                    dW[i] = -torch.matmul(torch.t(da[i]), self.h[i])
-                    db[i] = -torch.sum(da[i], dim=0)
+                    da[i-1] = torch.matmul(da[i], self.W[i]) * (1 - torch.tanh(self.a[i-1]) ** 2)
+                    self.dW[i] = -torch.matmul(torch.t(da[i]), self.h[i-1])
+                    self.db[i] = -torch.sum(da[i], dim=0)
 
-        self.dW, self.db = dW, db
-
-        return dW, db
+        return self.dW, self.db
 
     def parameter_update(self, lr, dW, db):
         with torch.no_grad():
@@ -436,10 +410,10 @@ class NHiddenNN(nn.Module):
 
 
 class NHiddenNNModel(object):
-    def __init__(self, path, lr, train_mode, criterion=None, num_epoch=10, device='cuda'):
+    def __init__(self, nn_parameters, path, lr, train_mode, criterion=None, num_epoch=10, device='cuda'):
         self.path = path
         self.device = device
-        self.model = NHiddenNN(train_mode).to(device)
+        self.model = NHiddenNN(nn_parameters=nn_parameters, train_mode=train_mode).to(device)
         self.num_epoch = num_epoch
         self.lr = lr
         self.train_mode = train_mode

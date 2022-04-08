@@ -1,4 +1,4 @@
-train mode,starting datetime,num_clients,batch_size,num_round,learning_rate,tol,ldp,alpha,c,rho,Final global model accuracy,time taken,model
+train mode,starting datetime,num_clients,batch_size,num_round,learning_rate,tol,ldp,alpha,c,rho,Final global model accuracy,time taken,hidden layer size
 dfa,2022-04-07 10:38:11.499271,2,4,3,0.001,0.0005,False,False,False,False,92.21,59.92
 dfa,2022-04-07 10:39:11.423101,2,4,3,0.001,0.0005,False,0.0,False,False,91.98%,56.75
 dfa,2022-04-07 10:40:08.177219,2,4,3,0.001,0.0005,False,0.0,False,False,92.29%,63.92
@@ -17,3 +17,8 @@ backprop,2022-04-08 11:54:26.861626,5,4,5,0.001,0.0005,parameter,0.1,1,3,92.74%,
 backprop,2022-04-08 12:28:57.089287,5,4,5,0.001,0.0005,parameter,0.08333,1,3,92.37%,2066.88
 backprop,2022-04-08 13:03:23.967767,5,4,5,0.001,0.0005,parameter,0.06944,1,3,92.24%,2064.66
 backprop,2022-04-08 13:37:48.625754,5,4,5,0.001,0.0005,parameter,0.05787,1,3,91.61%,2062.50
+backprop,2022-04-08 14:12:11.131733,5,4,5,0.001,0.0005,parameter,0.04822,1,3,92.14%,2068.83
+dfa,2022-04-08 16:37:31.132915,5,4,5,0.001,0.0005,False,0,False,False,82.24%,298.49
+dfa,2022-04-08 16:56:07.526341,5,4,5,0.001,0.0005,False,0,False,False,87.48%,222.99
+dfa,2022-04-08 17:11:33.723430,5,4,5,0.001,0.001,False,False,False,False,87.79%,170.02
+dfa,2022-04-08 17:16:57.381919,5,4,5,0.001,0.001,False,False,False,False,74.00%,220.64
