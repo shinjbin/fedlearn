@@ -493,3 +493,43 @@ Final global model accuracy using dfa: 16.35%
 time taken using dfa: 2331.88
 ---------------------------------------------------------------------------------------------
 
+--------------------------------------<backprop>---------------------------------------------
+starting datetime: 2022-04-08 10:26:53.338953
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0005, ldp = parameter, alpha = 0.1
+
+Final global model accuracy using backprop: 92.58%
+time taken using backprop: 2381.14
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<backprop>---------------------------------------------
+starting datetime: 2022-04-08 11:54:26.861626
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0005, ldp = parameter, alpha = 0.1
+
+Final global model accuracy using backprop: 92.74%
+time taken using backprop: 2070.23
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<backprop>---------------------------------------------
+starting datetime: 2022-04-08 12:28:57.089287
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0005, ldp = parameter, alpha = 0.08333333333333334
+
+Final global model accuracy using backprop: 92.37%
+time taken using backprop: 2066.88
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<backprop>---------------------------------------------
+starting datetime: 2022-04-08 13:03:23.967767
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0005, ldp = parameter, alpha = 0.06944166666666667
+
+Final global model accuracy using backprop: 92.24%
+time taken using backprop: 2064.66
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<backprop>---------------------------------------------
+starting datetime: 2022-04-08 13:37:48.625754
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0005, ldp = parameter, alpha = 0.05786666666666667
+
+Final global model accuracy using backprop: 91.61%
+time taken using backprop: 2062.50
+---------------------------------------------------------------------------------------------
+

@@ -36,7 +36,7 @@ if __name__ == '__main__':
     num_clients = 5
     batch_size = 4
     num_round = 5
-    train_mode = 'dfa'  # 'dfa' or 'backprop'
+    train_mode = 'backprop'  # 'dfa' or 'backprop'
     learning_rate = 0.001
     tol = 0.0005
     
@@ -53,9 +53,15 @@ if __name__ == '__main__':
         rho = False
 
     for stage in range(10):
-        print('current stage:', stage)
         dt = datetime.datetime.now()
         start_time = time.time()
+        print(f'--------------------------------------<{train_mode}>---------------------------------------------\n'
+                f'starting datetime: {dt}\n'
+                f'num_clients = {num_clients} batch_size = {batch_size}, num_round = {num_round}, '
+                f'learning_rate = {learning_rate}, tol = {tol}, ldp = {ldp}, alpha = {alpha}\n\n'
+                f'---------------------------------------------------------------------------------------------\n\n')
+        print(f'current stage: {stage}\n')
+        
 
 
         # load datasets and split

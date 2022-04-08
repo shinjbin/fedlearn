@@ -27,32 +27,33 @@ class Client(object):
         self.train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
         self.test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=True)
 
-    def local_train(self, B1, train_mode, tol=1e-4, train=True):
+    def local_train(self, B1, train_mode, tol, train=True):
         self.nn.model.to(self.device)
         if train:
             if train_mode == 'dfa':
-                W1, W2, b1, b2, gradients = self.nn.dfa_train(train_data=self.train_loader, B1=B1, tol=tol)
+                weights, biases, gradient_weights, gradient_biases = self.nn.dfa_train(train_data=self.train_loader, B1=B1, tol=tol)
             elif train_mode == 'backprop':
-                W1, W2, b1, b2, gradients = self.nn.backprop_train(train_data=self.train_loader, tol=tol)
+                weights, biases, gradient_weights, gradient_biases = self.nn.backprop_train(train_data=self.train_loader, tol=tol)
             else:
                 raise Exception("train mode is not existing")
             # self.nn.save()
         else:
             self.nn.load()
-            W1, W2, b1, b2 = self.nn.model.get_parameters()
+            weights, biases = self.nn.model.get_parameters()
+            gradient_weights, gradient_biases = 0, 0
 
         if self.device == "cuda":
             torch.cuda.empty_cache()
-        self.nn.model.to("cpu")
+        # self.nn.model.to("cpu")
 
-        return W1, W2, b1, b2
+        return weights, biases, gradient_weights, gradient_biases
 
     def local_eval(self):
         accuracy = self.nn.test(self.test_loader)
 
         if self.device == "cuda":
             torch.cuda.empty_cache()
-        self.nn.model.to("cpu")
+        # self.nn.model.to("cpu")
 
         print(f'Accuracy: {accuracy*100:.2f}%')
 
@@ -62,25 +63,22 @@ class Client(object):
         pass
 
     def ldp(self, alpha, c, rho):
-        W1 = self.nn.model.W1
-        W2 = self.nn.model.W2
-        b1 = self.nn.model.b1
-        b2 = self.nn.model.b2
+        weights, biases = self.nn.model.get_parameters()
 
-        ldp = LDP(W1_user=W1, W2_user=W2, b1_user=b1, b2_user=b2, device=self.device)
+        ldp = LDP(weights=weights, biases=biases, device=self.device)
 
-        ldp_W1, ldp_W2, ldp_b1, ldp_b2 = ldp.ordinal_cldp(alpha=alpha, c=c, rho=rho)
+        ldp_W, ldp_b = ldp.ordinal_cldp(alpha=alpha, c=c, rho=rho)
 
-        return ldp_W1, ldp_W2, ldp_b1, ldp_b2
+        return ldp_W, ldp_b
     
     def gradient_ldp(self, alpha, c, rho):
-        gradients = self.nn.model.gradients
+        gradient_weights, gradient_biases = self.nn.model.get_gradients()
 
-        ldp = LDP(W1_user=gradients[0], W2_user=gradients[1], b2_user=gradients[2], device=self.device)
+        ldp = LDP(weights=gradient_weights, biases=gradient_biases, device=self.device)
 
-        ldp_dW1, ldp_dW2, ldp_db1, ldp_db2 = ldp.ordinal_cldp(alpha=alpha, c=c, rho=rho)
+        ldp_dW, ldp_db = ldp.ordinal_cldp(alpha=alpha, c=c, rho=rho)
 
-        return ldp_dW1, ldp_dW2, ldp_db1, ldp_db2
+        return ldp_dW, ldp_db
 
 
 

@@ -5,13 +5,17 @@ import copy
 import torch.multiprocessing as mp
 
 """class for LDP module.
-input: weights, bias, device(cpu or cuda)"""
+input: weights, bias, device(cpu or cuda)
+it performs alpha-CLDP and output perturbed data."""
 class LDP(object):
-    def __init__(self, W1_user, W2_user, b1_user, b2_user, device):
-        self.W1 = copy.deepcopy(W1_user).to(device)
-        self.W2 = copy.deepcopy(W2_user).to(device)
-        self.b1 = copy.deepcopy(b1_user).to(device)
-        self.b2 = copy.deepcopy(b2_user).to(device)
+    def __init__(self, weights, biases, device):
+        self.W = []
+        self.b = []
+        for weight in weights:
+            self.W.append(copy.deepcopy(weight).to(device))
+        
+        for bias in biases:
+            self.b.append(copy.deepcopy(bias).to(device))
         self.device = device
 
     @staticmethod
@@ -61,19 +65,25 @@ class LDP(object):
         # u: item universe
         u = torch.arange(-c*(10**rho), c*(10**rho)+1).to(self.device)
 
-        self.W1 *= 10**rho
-        self.W2 *= 10**rho
-        self.b1 *= 10**rho
-        self.b2 *= 10**rho
+        with torch.no_grad():
+            for i in range(len(self.W)):
+                self.W[i] *= 10**rho
+                self.W[i] = self.perturb_weight(self.W[i], alpha=alpha, u=u)
+                self.W[i] /= 10**rho
+            for i in range(len(self.b)):
+                self.b[i] *= 10**rho
+                self.b[i] = self.perturb_bias(self.b[i], alpha=alpha, u=u)
+                self.b[i] /= 10**rho
         
-        self.W1 = self.perturb_weight(self.W1, alpha=alpha, u=u)
-        self.W2 = self.perturb_weight(self.W2, alpha=alpha, u=u)
-        self.b1 = self.perturb_bias(self.b1, alpha=alpha, u=u)
-        self.b2 = self.perturb_bias(self.b2, alpha=alpha, u=u)
+        
+        # self.W1 = self.perturb_weight(self.W1, alpha=alpha, u=u)
+        # self.W2 = self.perturb_weight(self.W2, alpha=alpha, u=u)
+        # self.b1 = self.perturb_bias(self.b1, alpha=alpha, u=u)
+        # self.b2 = self.perturb_bias(self.b2, alpha=alpha, u=u)
 
-        self.W1 /= c*(10**rho)
-        self.W2 /= c*(10**rho)
-        self.b1 /= c*(10**rho)
-        self.b2 /= c*(10**rho)
+        # self.W1 /= 10**rho
+        # self.W2 /= 10**rho
+        # self.b1 /= 10**rho
+        # self.b2 /= 10**rho
 
-        return self.W1, self.W2, self.b1, self.b2
+        return self.W, self.b
