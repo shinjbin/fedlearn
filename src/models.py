@@ -349,6 +349,7 @@ class NHiddenNN(nn.Module):
 
         return y_hat
 
+    # backward function using DFA
     def dfa_backward(self, e, B, x):
         da = [0] * (self.n-1)
         x = x.view(-1, self.fc[0].in_features)
@@ -367,6 +368,7 @@ class NHiddenNN(nn.Module):
                 self.dW[i] = -torch.matmul(torch.t(da[i]), self.h[i-1])
                 self.db[i] = -torch.sum(da[i], dim=0)
 
+    # backward function using backpropagation
     def backprop_backward(self, e, x):
         da = [0] * (self.n-1)
         x = x.view(-1, self.fc[0].in_features)

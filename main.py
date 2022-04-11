@@ -36,12 +36,12 @@ if __name__ == '__main__':
     num_clients = 5
     batch_size = 4
     num_round = 5
-    train_mode = 'backprop'  # 'dfa' or 'backprop'
+    train_mode = 'dfa'  # 'dfa' or 'backprop'
     learning_rate = 0.001
     tol = 0.0002
 
     # shape of neural network
-    hidden_size = [800]
+    hidden_size = [800, 800, 800]
     num_hidden_layer = len(hidden_size)
     in_features = 784 # 28*28
     num_classes = 10
@@ -63,7 +63,7 @@ if __name__ == '__main__':
         c = False
         rho = False
 
-    num_stages = 10
+    num_stages = 1
 
     for stage in range(num_stages):
         dt = datetime.datetime.now()
