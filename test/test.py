@@ -1,3 +1,4 @@
+from tkinter import N
 import torch
 import time
 
@@ -11,16 +12,23 @@ import time
 
 # total_time = time.time() - start
 
-class A(object):
-    def __init__(self, num):
-        self.num = num
+# class A(object):
+#     def __init__(self, num):
+#         self.num = num
     
-    def plus(self):
-        self.num += 1
+#     def plus(self):
+#         self.num += 1
 
-num = 1
-a = A(num)
+# num = 1
+# a = A(num)
 
-a.plus()
+# a.plus()
 
-print(num)
+# print(num)
+
+a = [0] * 3
+
+a[0] = torch.rand(2,3)
+a[1] = torch.rand(3,2)
+
+print(a)

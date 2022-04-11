@@ -573,3 +573,75 @@ Final global model accuracy using dfa: 74.00%
 time taken using dfa: 220.64
 ---------------------------------------------------------------------------------------------
 
+--------------------------------------<backprop>---------------------------------------------
+starting datetime: 2022-04-11 14:10:39.070933
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0001, ldp = False, alpha = False
+
+Final global model accuracy using backprop: 88.84%
+time taken using backprop: 531.96
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<backprop>---------------------------------------------
+starting datetime: 2022-04-11 14:19:54.864729
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0001, ldp = False, alpha = False
+
+Final global model accuracy using backprop: 88.09%
+time taken using backprop: 516.36
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<backprop>---------------------------------------------
+starting datetime: 2022-04-11 14:58:47.831438
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0001, ldp = False, alpha = False
+
+Final global model accuracy using backprop: 88.98%
+time taken using backprop: 518.33
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+starting datetime: 2022-04-11 15:37:27.093022
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0001, ldp = False, alpha = False
+
+Final global model accuracy using dfa: 91.63%
+time taken using dfa: 558.67
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<backprop>---------------------------------------------
+starting datetime: 2022-04-11 15:47:15.141147
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0001, ldp = False, alpha = False
+
+Final global model accuracy using backprop: 95.10%
+time taken using backprop: 477.51
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<backprop>---------------------------------------------
+starting datetime: 2022-04-11 15:55:37.590364
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0001, ldp = parameter, alpha = 0.1
+
+Final global model accuracy using backprop: 94.68%
+time taken using backprop: 1896.67
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<backprop>---------------------------------------------
+starting datetime: 2022-04-11 16:27:14.258161
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0001, ldp = parameter, alpha = 0.08333333333333334
+
+Final global model accuracy using backprop: 95.02%
+time taken using backprop: 1862.00
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<backprop>---------------------------------------------
+starting datetime: 2022-04-11 16:58:16.263809
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0001, ldp = parameter, alpha = 0.06944166666666667
+
+Final global model accuracy using backprop: 94.60%
+time taken using backprop: 1878.02
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+starting datetime: 2022-04-11 17:33:52.578946
+num_clients = 5 batch_size = 4, num_round = 5, learning_rate = 0.001, tol = 0.0005, ldp = False, alpha = False
+
+Final global model accuracy using dfa: 87.84%
+time taken using dfa: 250.07
+---------------------------------------------------------------------------------------------
+

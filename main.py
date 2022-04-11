@@ -38,10 +38,10 @@ if __name__ == '__main__':
     num_round = 5
     train_mode = 'backprop'  # 'dfa' or 'backprop'
     learning_rate = 0.001
-    tol = 0.0001
+    tol = 0.0002
 
     # shape of neural network
-    hidden_size = [400, 300, 200]
+    hidden_size = [800]
     num_hidden_layer = len(hidden_size)
     in_features = 784 # 28*28
     num_classes = 10
@@ -63,9 +63,9 @@ if __name__ == '__main__':
         c = False
         rho = False
 
-    
+    num_stages = 10
 
-    for stage in range(10):
+    for stage in range(num_stages):
         dt = datetime.datetime.now()
         start_time = time.time()
         print(f'--------------------------------------<{train_mode}>---------------------------------------------\n'
@@ -113,7 +113,7 @@ if __name__ == '__main__':
 
             # performing alpha-CLDP and update global model parameter(parameter averaging)
             if ldp: print(f'ldp parameters: alpha:{alpha:.5f}, c:{c}, rho:{rho}')
-            else: print('no ldp')
+            else: print('NO LDP')
 
             if ldp == 'gradient':
                 aggregation.global_gradient_update(alpha=alpha, c=c, rho=rho, ldp=ldp)
@@ -126,7 +126,7 @@ if __name__ == '__main__':
             print("--------------------------------")
         
 
-            # local model parameter update
+            # local model parameter update with global model parameters
             aggregation.local_parameter_update()
         
 

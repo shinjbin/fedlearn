@@ -31,8 +31,8 @@ class Client(object):
         self.nn.model.to(self.device)
         W, b, dW, db = self.nn.train(train_data=self.train_loader, B=B, tol=tol)
 
-        if self.device == "cuda":
-            torch.cuda.empty_cache()
+        # if self.device == "cuda":
+        #     torch.cuda.empty_cache()
         # self.nn.model.to("cpu")
 
         return W, b, dW, db
@@ -42,7 +42,7 @@ class Client(object):
 
         if self.device == "cuda":
             torch.cuda.empty_cache()
-        # self.nn.model.to("cpu")
+        self.nn.model.to("cpu")
 
         print(f'Accuracy: {accuracy*100:.2f}%')
 

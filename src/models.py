@@ -308,19 +308,20 @@ class NHiddenNN(nn.Module):
         linear_layer_sizes = [self.in_features] + self.hidden_size
         linear_layer_sizes.append(self.num_classes)
 
-        self.fc = []
-        self.W = []
-        self.b = []
+        self.fc = [0] * self.n
+        self.W = [0] * self.n
+        self.b = [0] * self.n
         for i in range(self.n):
-            self.fc.append(nn.Linear(linear_layer_sizes[i], linear_layer_sizes[i+1]).to(self.device))
-            self.W.append(self.fc[i].weight)
+            self.fc[i] = (nn.Linear(linear_layer_sizes[i], linear_layer_sizes[i+1]).to(self.device))
+            self.W[i] = (self.fc[i].weight)
             self.W[i].requires_grad = True
-            self.b.append(self.fc[i].bias)
+            self.b[i] = (self.fc[i].bias)
+            self.b[i].requires_grad = True
 
         self.tanh = nn.Tanh()
         self.sigmoid = nn.Sigmoid()
 
-        """a[i] = W[i]*x + b[i], h1 = f(a[i])"""
+        """a[i] = W[i]h[i-1] + b[i], h[i] = f(a[i])"""
         self.a = [0] * self.n
         self.h = [0] * (self.n-1)
 
@@ -339,7 +340,7 @@ class NHiddenNN(nn.Module):
             if i == 0:
                 self.a[i] = self.fc[i](x)
             else:
-                self.a[i] = self.fc[i](self.a[i-1])
+                self.a[i] = self.fc[i](self.h[i-1])
 
             if i == self.n-1:
                 y_hat = self.sigmoid(self.a[i])
@@ -355,9 +356,9 @@ class NHiddenNN(nn.Module):
         for i in range(self.n):
             
             if i == 0:
-                da[i] = -torch.matmul(e, B[i]) * (1 - torch.tanh(self.a[i]) ** 2)
-                self.dW[i] = -torch.matmul(torch.t(da[i]), x)
-                self.db[i] = -torch.sum(da[i], dim=0)
+                da[0] = -torch.matmul(e, B[0]) * (1 - torch.tanh(self.a[0]) ** 2)
+                self.dW[0] = -torch.matmul(torch.t(da[0]), x)
+                self.db[0] = -torch.sum(da[0], dim=0)
             elif i == self.n-1:
                 self.dW[i] = -torch.matmul(torch.t(e), self.h[i-1])
                 self.db[i] = -torch.sum(e, dim=0)
@@ -365,8 +366,6 @@ class NHiddenNN(nn.Module):
                 da[i] = -torch.matmul(e, B[i]) * (1 - torch.tanh(self.a[i]) ** 2)
                 self.dW[i] = -torch.matmul(torch.t(da[i]), self.h[i-1])
                 self.db[i] = -torch.sum(da[i], dim=0)
-
-        return self.dW, self.db
 
     def backprop_backward(self, e, x):
         da = [0] * (self.n-1)
@@ -387,8 +386,6 @@ class NHiddenNN(nn.Module):
                     self.dW[i] = -torch.matmul(torch.t(da[i]), self.h[i-1])
                     self.db[i] = -torch.sum(da[i], dim=0)
 
-        return self.dW, self.db
-
     def parameter_update(self, lr, dW, db):
         with torch.no_grad():
             for i in range(self.n):
@@ -406,6 +403,9 @@ class NHiddenNN(nn.Module):
 
     def get_gradients(self):
         return self.dW, self.db
+    
+    def zero_gradient(self):
+        self.dW, self.db = [0] * self.n, [0] * self.n
 
 
 class NHiddenNNModel(object):
@@ -418,7 +418,7 @@ class NHiddenNNModel(object):
         if criterion is None:
             self.criterion = nn.CrossEntropyLoss()
 
-    def train(self, B, train_data, tol=1e-4):
+    def train(self, B, train_data, tol):
 
         for epoch in range(self.num_epoch):
             running_loss = 0.0
@@ -427,21 +427,23 @@ class NHiddenNNModel(object):
             for batch, (x, y) in enumerate(train_data):
                 x, y = x.to(self.device), y.to(self.device)
 
+                self.model.zero_gradient()
+
                 y_hat = self.model.forward(x)
-                onehot = F.one_hot(y, num_classes=10)
+                onehot = F.one_hot(y, num_classes=self.model.num_classes)
                 e = torch.sub(y_hat, onehot)
 
                 loss = self.criterion(y_hat, y).item()
                 running_loss += loss
 
                 if self.train_mode == 'dfa':
-                    dW, db = self.model.dfa_backward(e, B, x)
+                    self.model.dfa_backward(e, B, x)
                 elif self.train_mode == 'backprop':
-                    dW, db = self.model.backprop_backward(e, x)
+                    self.model.backprop_backward(e, x)
                 else:
                     raise Exception("train_mode should be 'dfa' or 'backprop'")
 
-                self.model.parameter_update(self.lr, dW, db)
+                self.model.parameter_update(self.lr, self.model.dW, self.model.db)
 
 
                 if np.abs(loss - prev_loss) <= tol:
