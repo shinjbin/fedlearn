@@ -26,9 +26,14 @@ import time
 
 # print(num)
 
-a = [0] * 3
+shape = (3,2,3)
+a = torch.rand(shape)
 
-a[0] = torch.rand(2,3)
-a[1] = torch.rand(3,2)
+b = torch.rand((2,3))
+c = torch.rand((2,3))
+d = torch.rand((2,3))
 
+a[0] = b
+a[1] = c
+a[2] = d
 print(a)

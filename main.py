@@ -49,10 +49,11 @@ if __name__ == '__main__':
         'num_hidden_layer': num_hidden_layer,
         'in_features': in_features,
         'hidden_size': hidden_size,
-        'num_classes': num_classes
+        'num_classes': num_classes,
+        'batch_size': batch_size
     }
 
-    # ldp parameters
+    # ldp parameters5656565656565656565656
     ldp = False # 'gradient' or 'parameter' or False
     if ldp:
         alpha = 0.1

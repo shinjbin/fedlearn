@@ -38,7 +38,7 @@ class OneHiddenNN(nn.Module):
         self.W2 = self.fc2.weight
         self.W2.requires_grad = True
         self.b2 = self.fc2.bias
-        self.sigmoid = nn.Sigmoid()
+        self.softmax = nn.softmax()
 
         self.gradient_weights = [0, 0]
         self.gradient_biases = [0, 0]
@@ -55,7 +55,7 @@ class OneHiddenNN(nn.Module):
         self.a1 = self.fc1(x)
         self.h1 = self.tanh(self.a1)
         self.a2 = self.fc2(self.h1)
-        self.y_hat = self.sigmoid(self.a2)
+        self.y_hat = self.softmax(self.a2)
 
         return self.a1, self.h1, self.a2, self.y_hat
 
@@ -218,71 +218,6 @@ class OneHiddenNNModel(object):
     #     self.model.to(self.device)
     #     self.model.eval()
 
-# McMahan et al., 2016; 1,663,370 parameters
-class CNN(nn.Module):
-    def __init__(self, name, in_channels, hidden_channels, num_hiddens, num_classes):
-        super(CNN, self).__init__()
-        self.name = name
-        self.activation = nn.ReLU(True)
-
-        self.conv1 = nn.Conv2d(in_channels=in_channels, out_channels=hidden_channels, kernel_size=(5, 5), padding=1,
-                               stride=1, bias=False)
-        self.conv2 = nn.Conv2d(in_channels=hidden_channels, out_channels=hidden_channels * 2, kernel_size=(5, 5),
-                               padding=1, stride=1, bias=False)
-
-        self.maxpool1 = nn.MaxPool2d(kernel_size=(2, 2), padding=1)
-        self.maxpool2 = nn.MaxPool2d(kernel_size=(2, 2), padding=1)
-        self.flatten = nn.Flatten()
-
-        self.fc1 = nn.Linear(in_features=(hidden_channels * 2) * (7 * 7), out_features=num_hiddens, bias=False)
-        self.fc2 = nn.Linear(in_features=num_hiddens, out_features=num_classes, bias=False)
-
-    def forward(self, x):
-        x = self.activation(self.conv1(x))
-        x = self.maxpool1(x)
-
-        x = self.activation(self.conv2(x))
-        x = self.maxpool2(x)
-        x = self.flatten(x)
-
-        x = self.activation(self.fc1(x))
-        x = self.fc2(x)
-        return x
-
-
-# for CIFAR10
-class CNN2(nn.Module):
-    def __init__(self, name, in_channels, hidden_channels, num_hiddens, num_classes):
-        super(CNN2, self).__init__()
-        self.name = name
-        self.activation = nn.ReLU(True)
-
-        self.conv1 = nn.Conv2d(in_channels=in_channels, out_channels=hidden_channels, kernel_size=(5, 5), padding=1,
-                               stride=1, bias=False)
-        self.conv2 = nn.Conv2d(in_channels=hidden_channels, out_channels=hidden_channels * 2, kernel_size=(5, 5),
-                               padding=1, stride=1, bias=False)
-
-        self.maxpool1 = nn.MaxPool2d(kernel_size=(2, 2), padding=1)
-        self.maxpool2 = nn.MaxPool2d(kernel_size=(2, 2), padding=1)
-        self.flatten = nn.Flatten()
-
-        self.fc1 = nn.Linear(in_features=(hidden_channels * 2) * (8 * 8), out_features=num_hiddens, bias=False)
-        self.fc2 = nn.Linear(in_features=num_hiddens, out_features=num_classes, bias=False)
-
-    def forward(self, x):
-        x = self.activation(self.conv1(x))
-        x = self.maxpool1(x)
-
-        x = self.activation(self.conv2(x))
-        x = self.maxpool2(x)
-        x = self.flatten(x)
-
-        x = self.activation(self.fc1(x))
-        x = self.fc2(x)
-
-        return x
-
-
 
 """This Class is for linear model with n hidden layers.
     Using DFA or backpropagation.
@@ -304,6 +239,7 @@ class NHiddenNN(nn.Module):
         self.num_hidden_layer = nn_parameters['num_hidden_layer']
         self.hidden_size = nn_parameters['hidden_size']
         self.num_classes = nn_parameters['num_classes']
+        self.batch_size = nn_parameters['batch_size']
         self.n = self.num_hidden_layer + 1
         linear_layer_sizes = [self.in_features] + self.hidden_size
         linear_layer_sizes.append(self.num_classes)
@@ -319,7 +255,7 @@ class NHiddenNN(nn.Module):
             self.b[i].requires_grad = True
 
         self.tanh = nn.Tanh()
-        self.sigmoid = nn.Sigmoid()
+        self.softmax = nn.Softmax()
 
         """a[i] = W[i]h[i-1] + b[i], h[i] = f(a[i])"""
         self.a = [0] * self.n
@@ -331,8 +267,8 @@ class NHiddenNN(nn.Module):
         # set parameters zero for dfa
         if train_mode == 'dfa':
             for i in range(self.n):
-                self.W[i].data.fill_(0)
-                self.b[i].data.fill_(0)
+                self.fc[i].weight.data.fill_(0)
+                self.fc[i].bias.data.fill_(0)
 
     def forward(self, x):
         x = x.view(-1, self.in_features)
@@ -343,28 +279,40 @@ class NHiddenNN(nn.Module):
                 self.a[i] = self.fc[i](self.h[i-1])
 
             if i == self.n-1:
-                y_hat = self.sigmoid(self.a[i])
+                y_hat = self.softmax(self.a[i])
             else:
                 self.h[i] = self.tanh(self.a[i])
 
         return y_hat
 
-    # backward function using DFA
+    # backward function using DFA(Direct Feedback Alignment)
     def dfa_backward(self, e, B, x):
         da = [0] * (self.n-1)
         x = x.view(-1, self.fc[0].in_features)
+        
+        # def da(e, B, a):
+        #     for i in range(self.n-1):
+        #         da[i] = -torch.matmul(e, B[i]) * (1 - torch.tanh(a[i]) ** 2)
+        #     return da
 
+        # num_processes = 4
+        # self.model.share_memory()
+        # processes = []
+        # for rank in range(num_processes):
+        #     p = mp.Process(target=da, args=(e, B, self.a))
+        #     p.start()
+        #     processes.append(p)
+        # for p in processes:
+        #     p.join()
         for i in range(self.n-1):
             da[i] = -torch.matmul(e, B[i]) * (1 - torch.tanh(self.a[i]) ** 2)
 
-        for i in range(self.n):
-            
-            if i == 0:
-                self.dW[0], self.db[0] = -torch.matmul(torch.t(da[0]), x), -torch.sum(da[0], dim=0)
-            elif i == self.n-1:
-                self.dW[i], self.db[i] = -torch.matmul(torch.t(e), self.h[i-1]), -torch.sum(e, dim=0)
-            else:
-                self.dW[i], self.db[i] = -torch.matmul(torch.t(da[i]), self.h[i-1]), -torch.sum(da[i], dim=0)
+        self.fc[0].weight, self.fc[0].bias = -torch.matmul(torch.t(da[0]), x), -torch.sum(da[0], dim=0)
+        
+        for i in range(1, self.n-1):
+            self.fc[i].weight.grad, self.fc[i].bias.grad = -torch.matmul(torch.t(da[i]), self.h[i-1]), -torch.sum(da[i], dim=0)
+
+        self.dW[self.n-1], self.db[self.n-1] = -torch.matmul(torch.t(e), self.h[self.n-2]), -torch.sum(e, dim=0)
 
     # backward function using backpropagation
     def backprop_backward(self, e, x):
@@ -373,39 +321,40 @@ class NHiddenNN(nn.Module):
         
         for i in reversed(range(self.n)):
             if i == self.n-1:
-                da[i-1] = torch.matmul(e, self.W[i]) * (1 - torch.tanh(self.a[i-1]) ** 2)
-                self.dW[i] = -torch.matmul(torch.t(e), self.h[i-1])
-                self.db[i] = -torch.sum(e, dim=0)
+                da[i-1] = torch.matmul(e, self.fc[i].weight) * (1 - torch.tanh(self.a[i-1]) ** 2)
+                self.fc[i].weight.grad = -torch.matmul(torch.t(e), self.h[i-1])
+                self.fc[i].bias.grad = -torch.sum(e, dim=0)
             else:
                 
                 if i == 0:
-                    self.dW[i] = -torch.matmul(torch.t(da[0]), x)
-                    self.db[i] = -torch.sum(da[0], dim=0)
+                    self.fc[i].weight.grad = -torch.matmul(torch.t(da[0]), x)
+                    self.fc[i].bias.grad = -torch.sum(da[0], dim=0)
                 else:
-                    da[i-1] = torch.matmul(da[i], self.W[i]) * (1 - torch.tanh(self.a[i-1]) ** 2)
-                    self.dW[i] = -torch.matmul(torch.t(da[i]), self.h[i-1])
-                    self.db[i] = -torch.sum(da[i], dim=0)
+                    da[i-1] = torch.matmul(da[i], self.fc[i].weight) * (1 - torch.tanh(self.a[i-1]) ** 2)
+                    self.fc[i].weight.grad = -torch.matmul(torch.t(da[i]), self.h[i-1])
+                    self.fc[i].bias.grad = -torch.sum(da[i], dim=0)
 
-    def parameter_update(self, lr, dW, db):
+    def parameter_update(self, lr):
         with torch.no_grad():
             for i in range(self.n):
-                self.W[i] += lr * dW[i]
-                self.b[i] += lr * db[i]
+                self.fc[i].weight += lr * self.fc[i].weight.grad / self.batch_size
+                self.fc[i].bias += lr * self.fc[i].bias.grad / self.batch_size
 
     def parameter_renew(self, weights, biases):
         with torch.no_grad():
             for i in range(self.n):
-                self.W[i].copy_(weights[i])
-                self.b[i].copy_(biases[i])
+                self.fc[i].weight.copy_(weights[i])
+                self.fc[i].bias.copy_(biases[i])
 
     def get_parameters(self):
-        return self.W, self.b
+        W = [self.fc[i].weight for i in range(self.n)]
+        b = [self.fc[i].bias for i in range(self.n)]
+        return W, b
 
     def get_gradients(self):
-        return self.dW, self.db
-    
-    def zero_gradient(self):
-        self.dW, self.db = [0] * self.n, [0] * self.n
+        dW = [self.fc[i].weight.grad for i in range(self.n)]
+        db = [self.fc[i].bias.grad for i in range(self.n)]
+        return dW, db
 
 
 class NHiddenNNModel(object):
@@ -416,8 +365,10 @@ class NHiddenNNModel(object):
         self.lr = lr
         self.train_mode = train_mode
         self.criterion = nn.CrossEntropyLoss()
+        self.optimizer = torch.optim.SGD(self.model.parameters(), lr=self.lr)
 
     def train(self, B, train_data, tol):
+        self.model.train()
 
         for epoch in range(self.num_epoch):
             running_loss = 0.0
@@ -425,8 +376,7 @@ class NHiddenNNModel(object):
 
             for batch, (x, y) in enumerate(train_data):
                 x, y = x.to(self.device), y.to(self.device)
-
-                # self.model.zero_gradient()
+                self.optimizer.zero_grad()
 
                 y_hat = self.model.forward(x)
                 onehot = F.one_hot(y, num_classes=self.model.num_classes)
@@ -442,8 +392,9 @@ class NHiddenNNModel(object):
                 else:
                     raise Exception("train_mode should be 'dfa' or 'backprop'")
 
-                self.model.parameter_update(self.lr, self.model.dW, self.model.db)
+                # self.model.parameter_update(self.lr, self.model.dW, self.model.db)
 
+                self.optimizer.step()
 
                 if np.abs(loss - prev_loss) <= tol:
                     break
