@@ -289,30 +289,21 @@ class NHiddenNN(nn.Module):
     def dfa_backward(self, e, B, x):
         da = [0] * (self.n-1)
         x = x.view(-1, self.fc[0].in_features)
-        
-        # def da(e, B, a):
-        #     for i in range(self.n-1):
-        #         da[i] = -torch.matmul(e, B[i]) * (1 - torch.tanh(a[i]) ** 2)
-        #     return da
 
-        # num_processes = 4
-        # self.model.share_memory()
-        # processes = []
-        # for rank in range(num_processes):
-        #     p = mp.Process(target=da, args=(e, B, self.a))
-        #     p.start()
-        #     processes.append(p)
-        # for p in processes:
-        #     p.join()
         for i in range(self.n-1):
             da[i] = -torch.matmul(e, B[i]) * (1 - torch.tanh(self.a[i]) ** 2)
 
         self.fc[0].weight, self.fc[0].bias = -torch.matmul(torch.t(da[0]), x), -torch.sum(da[0], dim=0)
         
-        for i in range(1, self.n-1):
-            self.fc[i].weight.grad, self.fc[i].bias.grad = -torch.matmul(torch.t(da[i]), self.h[i-1]), -torch.sum(da[i], dim=0)
+        for i in range(self.n):
+            if i == 0:
+                self.fc[i].weight, self.fc[i].bias = -torch.matmul(torch.t(da[i]), x), -torch.sum(da[i], dim=0)
+            elif i == self.n-1:
+                self.fc[i].weight, self.db[self.n-1] = -torch.matmul(torch.t(e), self.h[self.n-2]), -torch.sum(e, dim=0)
+            else:
+                self.fc[i].weight.grad, self.fc[i].bias.grad = -torch.matmul(torch.t(da[i]), self.h[i-1]), -torch.sum(da[i], dim=0)
 
-        self.dW[self.n-1], self.db[self.n-1] = -torch.matmul(torch.t(e), self.h[self.n-2]), -torch.sum(e, dim=0)
+        
 
     # backward function using backpropagation
     def backprop_backward(self, e, x):
