@@ -42,7 +42,7 @@ class Client(object):
 
         if self.device == "cuda":
             torch.cuda.empty_cache()
-        self.nn.model.to("cpu")
+        # self.nn.model.to("cpu")
 
         print(f'Accuracy: {accuracy*100:.2f}%')
 

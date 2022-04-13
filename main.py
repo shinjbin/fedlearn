@@ -34,11 +34,11 @@ if __name__ == '__main__':
 
     # hyperparameter
     num_clients = 5
-    batch_size = 4
+    batch_size = 10
     num_round = 5
     train_mode = 'dfa'  # 'dfa' or 'backprop'
     learning_rate = 0.001
-    tol = 0.0002
+    tol = 0
 
     # shape of neural network
     hidden_size = [800, 800, 800]
@@ -102,7 +102,7 @@ if __name__ == '__main__':
         # federated learning start
         for r in range(num_round):
             print(f'---------------<Round {r}>----------------')
-
+                
             # train clients local model
             aggregation.train_client(train_mode=train_mode, tol=tol, hidden_size=hidden_size, num_classes=num_classes)
             print("--------------------------------")

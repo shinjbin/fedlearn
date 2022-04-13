@@ -354,19 +354,17 @@ class NHiddenNN(nn.Module):
         da = [0] * (self.n-1)
         x = x.view(-1, self.fc[0].in_features)
 
+        for i in range(self.n-1):
+            da[i] = -torch.matmul(e, B[i]) * (1 - torch.tanh(self.a[i]) ** 2)
+
         for i in range(self.n):
             
             if i == 0:
-                da[0] = -torch.matmul(e, B[0]) * (1 - torch.tanh(self.a[0]) ** 2)
-                self.dW[0] = -torch.matmul(torch.t(da[0]), x)
-                self.db[0] = -torch.sum(da[0], dim=0)
+                self.dW[0], self.db[0] = -torch.matmul(torch.t(da[0]), x), -torch.sum(da[0], dim=0)
             elif i == self.n-1:
-                self.dW[i] = -torch.matmul(torch.t(e), self.h[i-1])
-                self.db[i] = -torch.sum(e, dim=0)
+                self.dW[i], self.db[i] = -torch.matmul(torch.t(e), self.h[i-1]), -torch.sum(e, dim=0)
             else:
-                da[i] = -torch.matmul(e, B[i]) * (1 - torch.tanh(self.a[i]) ** 2)
-                self.dW[i] = -torch.matmul(torch.t(da[i]), self.h[i-1])
-                self.db[i] = -torch.sum(da[i], dim=0)
+                self.dW[i], self.db[i] = -torch.matmul(torch.t(da[i]), self.h[i-1]), -torch.sum(da[i], dim=0)
 
     # backward function using backpropagation
     def backprop_backward(self, e, x):
@@ -411,14 +409,13 @@ class NHiddenNN(nn.Module):
 
 
 class NHiddenNNModel(object):
-    def __init__(self, nn_parameters, lr, train_mode, criterion=None, num_epoch=10, device='cuda'):
+    def __init__(self, nn_parameters, lr, train_mode, num_epoch=10, device='cuda'):
         self.device = device
         self.model = NHiddenNN(nn_parameters=nn_parameters, train_mode=train_mode).to(device)
         self.num_epoch = num_epoch
         self.lr = lr
         self.train_mode = train_mode
-        if criterion is None:
-            self.criterion = nn.CrossEntropyLoss()
+        self.criterion = nn.CrossEntropyLoss()
 
     def train(self, B, train_data, tol):
 
@@ -429,7 +426,7 @@ class NHiddenNNModel(object):
             for batch, (x, y) in enumerate(train_data):
                 x, y = x.to(self.device), y.to(self.device)
 
-                self.model.zero_gradient()
+                # self.model.zero_gradient()
 
                 y_hat = self.model.forward(x)
                 onehot = F.one_hot(y, num_classes=self.model.num_classes)
