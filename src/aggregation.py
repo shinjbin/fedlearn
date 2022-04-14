@@ -77,7 +77,7 @@ class Aggregation(object):
 
         else:
             for i in range(self.num_client):
-                temp_W, temp_b = self.clients[i].nn.model.W, self.clients[i].nn.model.b
+                temp_W, temp_b = self.clients[i].nn.model.get_parameters()
                 for w in temp_W:
                     w.to(self.device)
                 for b in temp_b:

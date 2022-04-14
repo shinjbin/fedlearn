@@ -1,5 +1,6 @@
 from tkinter import N
 import numpy as np
+import time
 
 import torch
 import torch.nn as nn
@@ -32,13 +33,13 @@ class OneHiddenNN(nn.Module):
         self.W1.requires_grad = True
         self.b1 = self.fc1.bias
 
-        self.tanh = nn.Tanh()
+        self.tanh = F.Tanh()
 
         self.fc2 = nn.Linear(num_hiddens, num_classes)
         self.W2 = self.fc2.weight
         self.W2.requires_grad = True
         self.b2 = self.fc2.bias
-        self.softmax = nn.softmax()
+        self.softmax = F.softmax()
 
         self.gradient_weights = [0, 0]
         self.gradient_biases = [0, 0]
@@ -244,25 +245,17 @@ class NHiddenNN(nn.Module):
         linear_layer_sizes = [self.in_features] + self.hidden_size
         linear_layer_sizes.append(self.num_classes)
 
-        self.fc = [0] * self.n
-        self.W = [0] * self.n
-        self.b = [0] * self.n
+        self.fc = nn.ModuleList()
         for i in range(self.n):
-            self.fc[i] = (nn.Linear(linear_layer_sizes[i], linear_layer_sizes[i+1]).to(self.device))
-            self.W[i] = (self.fc[i].weight)
-            self.W[i].requires_grad = True
-            self.b[i] = (self.fc[i].bias)
-            self.b[i].requires_grad = True
-
-        self.tanh = nn.Tanh()
+            self.fc.append(nn.Linear(linear_layer_sizes[i], linear_layer_sizes[i+1]))
+            
+        self.activation = nn.Tanh()
         self.softmax = nn.Softmax()
+
 
         """a[i] = W[i]h[i-1] + b[i], h[i] = f(a[i])"""
         self.a = [0] * self.n
         self.h = [0] * (self.n-1)
-
-        self.dW = [0] * self.n
-        self.db = [0] * self.n
 
         # set parameters zero for dfa
         if train_mode == 'dfa':
@@ -272,16 +265,13 @@ class NHiddenNN(nn.Module):
 
     def forward(self, x):
         x = x.view(-1, self.in_features)
-        for i in range(self.n):
-            if i == 0:
-                self.a[i] = self.fc[i](x)
-            else:
-                self.a[i] = self.fc[i](self.h[i-1])
-
-            if i == self.n-1:
-                y_hat = self.softmax(self.a[i])
-            else:
-                self.h[i] = self.tanh(self.a[i])
+        self.a[0] = self.fc[0](x)
+        self.h[0] = self.activation(self.a[0])
+        for i in range(1, self.n-1):
+            self.a[i] = self.fc[i](self.h[i-1])
+            self.h[i] = self.activation(self.a[i])
+        self.a[self.n-1] = self.fc[self.n-1](self.h[self.n-2])
+        y_hat = self.softmax(self.a[self.n-1], dim=1)
 
         return y_hat
 
@@ -293,15 +283,16 @@ class NHiddenNN(nn.Module):
         for i in range(self.n-1):
             da[i] = -torch.matmul(e, B[i]) * (1 - torch.tanh(self.a[i]) ** 2)
 
-        self.fc[0].weight, self.fc[0].bias = -torch.matmul(torch.t(da[0]), x), -torch.sum(da[0], dim=0)
-        
         for i in range(self.n):
             if i == 0:
-                self.fc[i].weight, self.fc[i].bias = -torch.matmul(torch.t(da[i]), x), -torch.sum(da[i], dim=0)
+                self.fc[i].weight.grad = -torch.matmul(torch.t(da[i]), x)
+                self.fc[i].bias.grad = -torch.sum(da[i], dim=0)
             elif i == self.n-1:
-                self.fc[i].weight, self.db[self.n-1] = -torch.matmul(torch.t(e), self.h[self.n-2]), -torch.sum(e, dim=0)
+                self.fc[i].weight.grad = nn.Parameter(-torch.matmul(torch.t(e), self.h[i-1])) 
+                self.fc[i].bias.grad = nn.Parameter(-torch.sum(e, dim=0))
             else:
-                self.fc[i].weight.grad, self.fc[i].bias.grad = -torch.matmul(torch.t(da[i]), self.h[i-1]), -torch.sum(da[i], dim=0)
+                self.fc[i].weight.grad = -torch.matmul(torch.t(da[i]), self.h[i-1])
+                self.fc[i].bias.grad = -torch.sum(da[i], dim=0)
 
         
 
@@ -315,8 +306,8 @@ class NHiddenNN(nn.Module):
                 da[i-1] = torch.matmul(e, self.fc[i].weight) * (1 - torch.tanh(self.a[i-1]) ** 2)
                 self.fc[i].weight.grad = -torch.matmul(torch.t(e), self.h[i-1])
                 self.fc[i].bias.grad = -torch.sum(e, dim=0)
+
             else:
-                
                 if i == 0:
                     self.fc[i].weight.grad = -torch.matmul(torch.t(da[0]), x)
                     self.fc[i].bias.grad = -torch.sum(da[0], dim=0)
@@ -356,10 +347,11 @@ class NHiddenNNModel(object):
         self.lr = lr
         self.train_mode = train_mode
         self.criterion = nn.CrossEntropyLoss()
-        self.optimizer = torch.optim.SGD(self.model.parameters(), lr=self.lr)
+        self.optimizer = torch.optim.SGD(params=self.model.parameters(), lr=self.lr)
+        
 
     def train(self, B, train_data, tol):
-        self.model.train()
+        start = time.time()
 
         for epoch in range(self.num_epoch):
             running_loss = 0.0
@@ -367,15 +359,14 @@ class NHiddenNNModel(object):
 
             for batch, (x, y) in enumerate(train_data):
                 x, y = x.to(self.device), y.to(self.device)
-                self.optimizer.zero_grad()
 
                 y_hat = self.model.forward(x)
+
+                loss = self.criterion(y_hat, y)
+                running_loss += loss.item()
+
                 onehot = F.one_hot(y, num_classes=self.model.num_classes)
                 e = torch.sub(y_hat, onehot)
-
-                loss = self.criterion(y_hat, y).item()
-                running_loss += loss
-
                 if self.train_mode == 'dfa':
                     self.model.dfa_backward(e, B, x)
                 elif self.train_mode == 'backprop':
@@ -383,15 +374,15 @@ class NHiddenNNModel(object):
                 else:
                     raise Exception("train_mode should be 'dfa' or 'backprop'")
 
-                # self.model.parameter_update(self.lr, self.model.dW, self.model.db)
+                self.model.parameter_update(self.lr)
 
-                self.optimizer.step()
 
-                if np.abs(loss - prev_loss) <= tol:
+                if np.abs(loss.item() - prev_loss) <= tol:
                     break
-                prev_loss = loss
+                prev_loss = loss.item()
 
-        return self.model.W, self.model.b, self.model.dW, self.model.db
+        time_spent = time.time() - start
+        print(f'time_spent: {time_spent}')
 
     def test(self, test_data):
         self.model.to(self.device)

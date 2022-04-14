@@ -29,7 +29,9 @@ class Client(object):
 
     def local_train(self, B, tol):
         self.nn.model.to(self.device)
-        W, b, dW, db = self.nn.train(train_data=self.train_loader, B=B, tol=tol)
+        self.nn.train(train_data=self.train_loader, B=B, tol=tol)
+        W, b = self.nn.model.get_parameters()
+        dW, db = self.nn.model.get_gradients()
 
         # if self.device == "cuda":
         #     torch.cuda.empty_cache()

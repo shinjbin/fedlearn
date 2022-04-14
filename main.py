@@ -36,7 +36,7 @@ if __name__ == '__main__':
     num_clients = 5
     batch_size = 10
     num_round = 5
-    train_mode = 'dfa'  # 'dfa' or 'backprop'
+    train_mode = 'backprop'  # 'dfa' or 'backprop'
     learning_rate = 0.001
     tol = 0
 
