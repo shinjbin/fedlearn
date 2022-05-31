@@ -765,3 +765,203 @@ Final global model accuracy using backprop: 91.21%
 time taken using backprop: 1083.30
 ---------------------------------------------------------------------------------------------
 
+--------------------------------------<dfa>---------------------------------------------
+starting datetime: 2022-05-02 15:09:03.279111
+num_clients = 5 batch_size = 10, num_round = 1, learning_rate = 0.001, tol = 0, ldp = False, alpha = False
+
+Final global model accuracy using dfa: 94.35%
+time taken using dfa: 213.58
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+starting datetime: 2022-05-02 15:16:39.208502
+num_clients = 5 batch_size = 10, num_round = 1, learning_rate = 0.001, tol = 0, ldp = False, alpha = False
+
+Final global model accuracy using dfa: 94.23%
+time taken using dfa: 217.52
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+starting datetime: 2022-05-02 15:20:16.728184
+num_clients = 5 batch_size = 10, num_round = 1, learning_rate = 0.001, tol = 0, ldp = False, alpha = 0.0
+
+Final global model accuracy using dfa: 94.16%
+time taken using dfa: 198.59
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+starting datetime: 2022-05-02 15:23:35.323455
+num_clients = 5 batch_size = 10, num_round = 1, learning_rate = 0.001, tol = 0, ldp = False, alpha = 0.0
+
+Final global model accuracy using dfa: 94.41%
+time taken using dfa: 202.88
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+starting datetime: 2022-05-02 15:26:58.207039
+num_clients = 5 batch_size = 10, num_round = 1, learning_rate = 0.001, tol = 0, ldp = False, alpha = 0.0
+
+Final global model accuracy using dfa: 94.39%
+time taken using dfa: 195.84
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+starting datetime: 2022-05-02 15:30:14.049223
+num_clients = 5 batch_size = 10, num_round = 1, learning_rate = 0.001, tol = 0, ldp = False, alpha = 0.0
+
+Final global model accuracy using dfa: 94.23%
+time taken using dfa: 204.64
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<backprop>---------------------------------------------
+starting datetime: 2022-05-03 10:08:17.950681
+num_clients = 5 batch_size = 10, num_round = 1, learning_rate = 0.001, tol = 0, ldp = False, alpha = False
+
+Final global model accuracy using backprop: 52.36%
+time taken using backprop: 301.88
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<backprop>---------------------------------------------
+starting datetime: 2022-05-03 10:13:19.832995
+num_clients = 5 batch_size = 10, num_round = 1, learning_rate = 0.001, tol = 0, ldp = False, alpha = 0.0
+
+Final global model accuracy using backprop: 61.18%
+time taken using backprop: 308.94
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<backprop>---------------------------------------------
+starting datetime: 2022-05-03 10:18:28.778638
+num_clients = 5 batch_size = 10, num_round = 1, learning_rate = 0.001, tol = 0, ldp = False, alpha = 0.0
+
+Final global model accuracy using backprop: 58.17%
+time taken using backprop: 306.52
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<backprop>---------------------------------------------
+starting datetime: 2022-05-03 10:23:35.295162
+num_clients = 5 batch_size = 10, num_round = 1, learning_rate = 0.001, tol = 0, ldp = False, alpha = 0.0
+
+Final global model accuracy using backprop: 52.72%
+time taken using backprop: 306.41
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<backprop>---------------------------------------------
+starting datetime: 2022-05-03 10:28:41.709933
+num_clients = 5 batch_size = 10, num_round = 1, learning_rate = 0.001, tol = 0, ldp = False, alpha = 0.0
+
+Final global model accuracy using backprop: 54.97%
+time taken using backprop: 299.99
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<backprop>---------------------------------------------
+starting datetime: 2022-05-03 10:35:49.327636
+num_clients = 5 batch_size = 10, num_round = 1, learning_rate = 0.001, tol = 0, ldp = False, alpha = False
+
+Final global model accuracy using backprop: 44.35%
+time taken using backprop: 290.43
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<backprop>---------------------------------------------
+starting datetime: 2022-05-03 10:42:18.243169
+num_clients = 5 batch_size = 10, num_round = 1, learning_rate = 0.001, tol = 0, ldp = False, alpha = False
+
+Final global model accuracy using backprop: 33.78%
+time taken using backprop: 306.48
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<backprop>---------------------------------------------
+starting datetime: 2022-05-03 11:20:30.880472
+num_clients = 5 batch_size = 10, num_round = 1, learning_rate = 0.001, tol = 0, ldp = False, alpha = False
+
+Final global model accuracy using backprop: 89.13%
+time taken using backprop: 255.77
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<backprop>---------------------------------------------
+starting datetime: 2022-05-03 11:27:48.606007
+num_clients = 5 batch_size = 10, num_round = 1, learning_rate = 0.001, tol = 0, ldp = False, alpha = False
+
+Final global model accuracy using backprop: 17.24%
+time taken using backprop: 125.39
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<backprop>---------------------------------------------
+starting datetime: 2022-05-04 14:02:12.502233
+num_clients = 5 batch_size = 10, num_round = 5, learning_rate = 0.001, tol = 0, ldp = False, alpha = False
+
+Final global model accuracy using backprop: 86.73%
+time taken using backprop: 548.34
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<backprop>---------------------------------------------
+starting datetime: 2022-05-04 14:11:20.839416
+num_clients = 5 batch_size = 10, num_round = 5, learning_rate = 0.001, tol = 0, ldp = False, alpha = 0.0
+
+Final global model accuracy using backprop: 87.47%
+time taken using backprop: 541.46
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<backprop>---------------------------------------------
+starting datetime: 2022-05-04 14:20:22.303181
+num_clients = 5 batch_size = 10, num_round = 5, learning_rate = 0.001, tol = 0, ldp = False, alpha = 0.0
+
+Final global model accuracy using backprop: 87.05%
+time taken using backprop: 543.68
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<backprop>---------------------------------------------
+starting datetime: 2022-05-04 14:29:25.988801
+num_clients = 5 batch_size = 10, num_round = 5, learning_rate = 0.001, tol = 0, ldp = False, alpha = 0.0
+
+Final global model accuracy using backprop: 87.09%
+time taken using backprop: 567.73
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+starting datetime: 2022-05-04 15:26:24.621004
+num_clients = 5 batch_size = 10, num_round = 5, learning_rate = 0.001, tol = 0, ldp = False, alpha = False
+
+Final global model accuracy using dfa: 89.52%
+time taken using dfa: 546.13
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+starting datetime: 2022-05-04 15:35:30.756657
+num_clients = 5 batch_size = 10, num_round = 5, learning_rate = 0.001, tol = 0, ldp = False, alpha = 0.0
+
+Final global model accuracy using dfa: 88.77%
+time taken using dfa: 536.45
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+starting datetime: 2022-05-04 15:44:27.211590
+num_clients = 5 batch_size = 10, num_round = 5, learning_rate = 0.001, tol = 0, ldp = False, alpha = 0.0
+
+Final global model accuracy using dfa: 89.22%
+time taken using dfa: 542.19
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+starting datetime: 2022-05-04 15:53:29.399777
+num_clients = 5 batch_size = 10, num_round = 5, learning_rate = 0.001, tol = 0, ldp = False, alpha = 0.0
+
+Final global model accuracy using dfa: 88.67%
+time taken using dfa: 551.89
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+starting datetime: 2022-05-04 16:02:41.293955
+num_clients = 5 batch_size = 10, num_round = 5, learning_rate = 0.001, tol = 0, ldp = False, alpha = 0.0
+
+Final global model accuracy using dfa: 89.29%
+time taken using dfa: 548.34
+---------------------------------------------------------------------------------------------
+
+--------------------------------------<dfa>---------------------------------------------
+starting datetime: 2022-05-09 15:37:47.790851
+num_clients = 2 batch_size = 64, num_round = 5, learning_rate = 0.001, tol = 0, ldp = False, alpha = False
+
+Final global model accuracy using dfa: 87.59%
+time taken using dfa: 210.41
+---------------------------------------------------------------------------------------------
+

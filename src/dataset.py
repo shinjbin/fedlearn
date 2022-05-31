@@ -5,12 +5,19 @@ import os
 from torch.utils.data.dataset import Subset
 
 class Dataset(object):
-    def __init__(self):
-        download_root = './MNIST_DATASET'
+    def __init__(self, dataset_name):
+        
         transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))])
 
-        self.train_dataset = datasets.MNIST(root=download_root, train=True, transform=transform, download=True)
-        self.test_dataset = datasets.MNIST(root=download_root, train=False, transform=transform, download=True)
+        if dataset_name == 'mnist' or 'MNIST':
+            download_root = './MNIST_DATASET'
+            self.train_dataset = datasets.MNIST(root=download_root, train=True, transform=transform, download=True)
+            self.test_dataset = datasets.MNIST(root=download_root, train=True, transform=transform, download=True)
+
+        elif dataset_name == 'cifar10' or 'CIFAR-10' or 'CIFAR10':
+            download_root = './CIFAR10_DATASET'
+            self.train_dataset = datasets.CIFAR10(root=download_root, train=True, transform=transform, download=True)
+            self.test_dataset = datasets.CIFAR10(root=download_root, train=True, transform=transform, download=True)
 
     def split(self, num_clients):
         """split dataset for number of clients"""
@@ -22,3 +29,5 @@ class Dataset(object):
             split_dataset.append(Subset(self.train_dataset, indices))
 
         return split_dataset, self.test_dataset
+
+

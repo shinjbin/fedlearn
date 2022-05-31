@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader
 import torch
 from torchvision.datasets import MNIST
 import torchvision.transforms as transforms
-from .models import NHiddenNN, NHiddenNNModel
+from .models import LinearModel
 import torch.utils.data as data
 from .ldp_module import LDP
 
@@ -19,32 +19,32 @@ class Client(object):
         self.test_dataset = None
         self.train_loader = None
         self.test_loader = None
-        self.nn = None
+        self.net = None
 
-    def dataload(self, nn_parameters, train_dataset, test_dataset, batch_size, train_mode, lr=1e-4):
-        self.nn = copy.deepcopy(NHiddenNNModel(nn_parameters=nn_parameters, device=self.device, train_mode=train_mode, lr=lr))
+    def dataload(self, net_parameters, train_dataset, test_dataset, batch_size, train_mode, lr=1e-4):
+        self.model = copy.deepcopy(LinearModel(net_parameters=net_parameters, device=self.device, train_mode=train_mode, lr=lr))
 
         self.train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
         self.test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=True)
 
-    def local_train(self, B, tol):
-        self.nn.model.to(self.device)
-        self.nn.train(train_data=self.train_loader, B=B, tol=tol)
-        W, b = self.nn.model.get_parameters()
-        dW, db = self.nn.model.get_gradients()
+    def local_train(self, tol):
+        self.model.net.to(self.device)
+        self.model.train(train_data=self.train_loader, tol=tol)
+        W, b = self.model.net.get_parameters()
+        dW, db = self.model.net.get_gradients()
 
         # if self.device == "cuda":
         #     torch.cuda.empty_cache()
-        # self.nn.model.to("cpu")
+        # self.net.model.to("cpu")
 
         return W, b, dW, db
 
     def local_eval(self):
-        accuracy = self.nn.test(self.test_loader)
+        accuracy = self.model.test(self.test_loader)
 
         if self.device == "cuda":
             torch.cuda.empty_cache()
-        # self.nn.model.to("cpu")
+        # self.model.net.to("cpu")
 
         print(f'Accuracy: {accuracy*100:.2f}%')
 
@@ -54,7 +54,7 @@ class Client(object):
         pass
 
     def ldp(self, alpha, c, rho):
-        weights, biases = self.nn.model.get_parameters()
+        weights, biases = self.model.net.get_parameters()
 
         ldp = LDP(weights=weights, biases=biases, device=self.device)
 
@@ -63,7 +63,7 @@ class Client(object):
         return ldp_W, ldp_b
     
     def gradient_ldp(self, alpha, c, rho):
-        gradient_weights, gradient_biases = self.nn.model.get_gradients()
+        gradient_weights, gradient_biases = self.model.net.get_gradients()
 
         ldp = LDP(weights=gradient_weights, biases=gradient_biases, device=self.device)
 

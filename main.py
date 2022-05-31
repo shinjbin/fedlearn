@@ -14,6 +14,7 @@ import csv
 
 from src.dataset import Dataset
 from src.aggregation import Aggregation
+from src.utils import *
 
 
 def k_selection(parameters_list, k):
@@ -24,36 +25,33 @@ if __name__ == '__main__':
 
     device = "cuda" if torch.cuda.is_available() else 'cpu'
 
-    os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-    os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
-
     print('Device:', device)
     print('Current cuda device:', torch.cuda.current_device())
     print('Count of using GPUs:', torch.cuda.device_count())
     print('------------------------------------------')
 
     # hyperparameter
-    num_clients = 5
-    batch_size = 10
+    num_clients = 2
+    batch_size = 64
     num_round = 5
     train_mode = 'backprop'  # 'dfa' or 'backprop'
     learning_rate = 0.001
     tol = 0
+    dataset_name = 'MNIST'
 
     # shape of neural network
-    hidden_size = [800, 800, 800]
+    hidden_size = [800, 800]
     num_hidden_layer = len(hidden_size)
     in_features = 784 # 28*28
     num_classes = 10
-    nn_parameters = {
-        'num_hidden_layer': num_hidden_layer,
+    net_parameters = {
         'in_features': in_features,
         'hidden_size': hidden_size,
         'num_classes': num_classes,
         'batch_size': batch_size
     }
 
-    # ldp parameters5656565656565656565656
+    # ldp parameters
     ldp = False # 'gradient' or 'parameter' or False
     if ldp:
         alpha = 0.1
@@ -81,19 +79,19 @@ if __name__ == '__main__':
 
 
         # load datasets and split
-        dataset = Dataset()
+        dataset = Dataset(dataset_name)
         train_dataset_split, test_dataset = dataset.split(num_clients)
         test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=True)
 
         # create aggregation module
-        aggregation = Aggregation(device, train_mode, nn_parameters)
+        aggregation = Aggregation(device, train_mode, net_parameters)
 
         # create clients
         clients = []
         print(f'Creating {num_clients} clients...')
         for i in range(num_clients):
             aggregation.create_clients(i)
-            aggregation.clients[i].dataload(nn_parameters=nn_parameters,
+            aggregation.clients[i].dataload(net_parameters=net_parameters,
                                             train_dataset=train_dataset_split[i],
                                             test_dataset=test_dataset,
                                             batch_size=batch_size,
@@ -103,6 +101,8 @@ if __name__ == '__main__':
         # federated learning start
         for r in range(num_round):
             print(f'---------------<Round {r}>----------------')
+
+            if train_mode == 'backprop': aggregation.local_parameter_update()
                 
             # train clients local model
             aggregation.train_client(train_mode=train_mode, tol=tol, hidden_size=hidden_size, num_classes=num_classes)
@@ -180,8 +180,6 @@ if __name__ == '__main__':
 
 
         torch.cuda.empty_cache()
-
-        alpha /= 1.2
 
         
 
